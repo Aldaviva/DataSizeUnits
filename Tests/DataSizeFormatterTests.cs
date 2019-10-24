@@ -12,7 +12,7 @@ namespace Tests {
         [MemberData(nameof(unitData))]
         public void format(ulong inputBytes, string formatSyntax, string expectedOutput) {
             string formatString = "{0:" + formatSyntax + "}";
-            string actualOutput = string.Format(new DataSizeFormatter(), formatString, inputBytes);
+            string actualOutput = string.Format(DataSize.FORMATTER, formatString, inputBytes);
             Assert.Equal(expectedOutput, actualOutput);
         }
 
@@ -63,7 +63,7 @@ namespace Tests {
 
         [Theory, MemberData(nameof(otherData))]
         public void handleOtherFormats(object otherInput, string expectedOutput) {
-            string actualOutput = string.Format(new DataSizeFormatter(), "{0:D}", otherInput);
+            string actualOutput = string.Format(DataSize.FORMATTER, "{0:D}", otherInput);
             Assert.Equal(expectedOutput, actualOutput);
         }
 
@@ -73,12 +73,39 @@ namespace Tests {
             { null, "" }
         };
 
+        [Fact]
+        public void handleFormatException() {
+            Assert.Throws<FormatException>(() => string.Format(DataSize.FORMATTER, "{0:MB1}", new Unstringable()));
+        }
+
+        [Fact]
+        public void wrongUsage() {
+            string actual = ((ICustomFormatter) DataSize.FORMATTER).Format("{0:A}", 0, null);
+            Assert.Null(actual);
+        }
+
+        // I can't fucking believe the C# compiler is stupid enough to allow this.
+        [Fact]
+        public void madeUpEnumValue() {
+            const DataSize.Unit madeUpEnumValue = (DataSize.Unit) 9999;
+            Assert.Throws<ArgumentOutOfRangeException>(() => DataSize.toBits(madeUpEnumValue));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DataSize.toAbbreviation(madeUpEnumValue));
+        }
+
     }
 
     internal class Unformattable {
 
         public override string ToString() {
             return "unformattable";
+        }
+
+    }
+
+    internal class Unstringable {
+
+        public override string ToString() {
+            throw new FormatException();
         }
 
     }

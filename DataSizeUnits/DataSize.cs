@@ -2,158 +2,160 @@
 
 namespace DataSizeUnits {
 
-    public enum DataSize {
+    public static class DataSize {
 
-        BYTE,
-        KILOBYTE,
-        MEGABYTE,
-        GIGABYTE,
-        TERABYTE,
-        PETABYTE,
-        BIT,
-        KILOBIT,
-        MEGABIT,
-        GIGABIT,
-        TERABIT,
-        PETABIT
+        public static readonly IFormatProvider FORMATTER = new DataSizeFormatter();
 
-    }
+        public enum Unit {
 
-    public static class DataSizeMethods {
+            BYTE,
+            KILOBYTE,
+            MEGABYTE,
+            GIGABYTE,
+            TERABYTE,
+            PETABYTE,
+            BIT,
+            KILOBIT,
+            MEGABIT,
+            GIGABIT,
+            TERABIT,
+            PETABIT
 
-        public static ulong asBits(this DataSize source) {
+        }
+
+        public static ulong toBits(Unit source) {
             switch (source) {
-                case DataSize.BYTE:
+                case Unit.BYTE:
                     return 8L;
-                case DataSize.KILOBYTE:
+                case Unit.KILOBYTE:
                     return 8L * 1024;
-                case DataSize.MEGABYTE:
+                case Unit.MEGABYTE:
                     return 8L * 1024 * 1024;
-                case DataSize.GIGABYTE:
+                case Unit.GIGABYTE:
                     return 8L * 1024 * 1024 * 1024;
-                case DataSize.TERABYTE:
+                case Unit.TERABYTE:
                     return 8L * 1024 * 1024 * 1024 * 1024;
-                case DataSize.PETABYTE:
+                case Unit.PETABYTE:
                     return 8L * 1024 * 1024 * 1024 * 1024 * 1024;
-                case DataSize.BIT:
+                case Unit.BIT:
                     return 1;
-                case DataSize.KILOBIT:
+                case Unit.KILOBIT:
                     return 1000L;
-                case DataSize.MEGABIT:
+                case Unit.MEGABIT:
                     return 1000L * 1000;
-                case DataSize.GIGABIT:
+                case Unit.GIGABIT:
                     return 1000L * 1000 * 1000;
-                case DataSize.TERABIT:
+                case Unit.TERABIT:
                     return 1000L * 1000 * 1000 * 1000;
-                case DataSize.PETABIT:
+                case Unit.PETABIT:
                     return 1000L * 1000 * 1000 * 1000 * 1000;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(source), source, null);
             }
         }
 
-        public static string toAbbreviation(this DataSize source) {
+        public static string toAbbreviation(Unit source) {
             switch (source) {
-                case DataSize.BYTE:
+                case Unit.BYTE:
                     return "B";
-                case DataSize.KILOBYTE:
+                case Unit.KILOBYTE:
                     return "KB";
-                case DataSize.MEGABYTE:
+                case Unit.MEGABYTE:
                     return "MB";
-                case DataSize.GIGABYTE:
+                case Unit.GIGABYTE:
                     return "GB";
-                case DataSize.TERABYTE:
+                case Unit.TERABYTE:
                     return "TB";
-                case DataSize.PETABYTE:
+                case Unit.PETABYTE:
                     return "PB";
-                case DataSize.BIT:
+                case Unit.BIT:
                     return "b";
-                case DataSize.KILOBIT:
+                case Unit.KILOBIT:
                     return "kb";
-                case DataSize.MEGABIT:
+                case Unit.MEGABIT:
                     return "mb";
-                case DataSize.GIGABIT:
+                case Unit.GIGABIT:
                     return "gb";
-                case DataSize.TERABIT:
+                case Unit.TERABIT:
                     return "tb";
-                case DataSize.PETABIT:
+                case Unit.PETABIT:
                     return "pb";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(source), source, null);
             }
         }
 
-        public static DataSize forMagnitude(int orderOfMagnitude, bool useBytes) {
+        public static Unit forMagnitude(int orderOfMagnitude, bool useBytes) {
             switch (orderOfMagnitude) {
                 case 0:
-                    return useBytes ? DataSize.BYTE : DataSize.BIT;
+                    return useBytes ? Unit.BYTE : Unit.BIT;
                 case 1:
-                    return useBytes ? DataSize.KILOBYTE : DataSize.KILOBIT;
+                    return useBytes ? Unit.KILOBYTE : Unit.KILOBIT;
                 case 2:
-                    return useBytes ? DataSize.MEGABYTE : DataSize.MEGABIT;
+                    return useBytes ? Unit.MEGABYTE : Unit.MEGABIT;
                 case 3:
-                    return useBytes ? DataSize.GIGABYTE : DataSize.GIGABIT;
+                    return useBytes ? Unit.GIGABYTE : Unit.GIGABIT;
                 case 4:
-                    return useBytes ? DataSize.TERABYTE : DataSize.TERABIT;
+                    return useBytes ? Unit.TERABYTE : Unit.TERABIT;
                 case 5:
-                    return useBytes ? DataSize.PETABYTE : DataSize.PETABIT;
+                    return useBytes ? Unit.PETABYTE : Unit.PETABIT;
                 default:
                     throw new ArgumentOutOfRangeException(
                         $"Supported orders of magnitude are between 0 (bit/byte) and 5 (petabit/petabyte) inclusive. {orderOfMagnitude} is outside the range [0,5].");
             }
         }
 
-        public static DataSize forAbbreviation(string abbreviation) {
+        public static Unit forAbbreviation(string abbreviation) {
             switch (abbreviation.ToLowerInvariant()) {
                 case "byte":
-                    return DataSize.BYTE;
+                    return Unit.BYTE;
                 case "bit":
-                    return DataSize.BIT;
+                    return Unit.BIT;
                 case "kilobyte":
                 case "kbyte":
                 case "kibibit":
                 case "kib":
                 case "kibit":
-                    return DataSize.KILOBYTE;
+                    return Unit.KILOBYTE;
                 case "kilobit":
                 case "kbit":
-                    return DataSize.KILOBIT;
+                    return Unit.KILOBIT;
                 case "megabyte":
                 case "mbyte":
                 case "mebibit":
                 case "mib":
                 case "mibit":
-                    return DataSize.MEGABYTE;
+                    return Unit.MEGABYTE;
                 case "megabit":
                 case "mbit":
-                    return DataSize.MEGABIT;
+                    return Unit.MEGABIT;
                 case "gigabyte":
                 case "gbyte":
                 case "gibibit":
                 case "gib":
                 case "gibit":
-                    return DataSize.GIGABYTE;
+                    return Unit.GIGABYTE;
                 case "gigabit":
                 case "gbit":
-                    return DataSize.GIGABIT;
+                    return Unit.GIGABIT;
                 case "terabyte":
                 case "tbyte":
                 case "tebibit":
                 case "tib":
                 case "tibit":
-                    return DataSize.TERABYTE;
+                    return Unit.TERABYTE;
                 case "terabit":
                 case "tbit":
-                    return DataSize.TERABIT;
+                    return Unit.TERABIT;
                 case "petabyte":
                 case "pbyte":
                 case "pebibit":
                 case "pib":
                 case "pibit":
-                    return DataSize.PETABYTE;
+                    return Unit.PETABYTE;
                 case "petabit":
                 case "pbit":
-                    return DataSize.PETABIT;
+                    return Unit.PETABIT;
                 default:
                     //not found in case-insensitive switch, continuing to case-sensitive switch
                     break;
@@ -161,47 +163,47 @@ namespace DataSizeUnits {
 
             switch (abbreviation) {
                 case "B":
-                    return DataSize.BYTE;
+                    return Unit.BYTE;
                 case "b":
-                    return DataSize.BIT;
+                    return Unit.BIT;
                 case "kB":
                 case "KB":
-                    return DataSize.KILOBYTE;
+                    return Unit.KILOBYTE;
                 case "kb":
                 case "Kb":
-                    return DataSize.KILOBIT;
+                    return Unit.KILOBIT;
                 case "MB":
-                    return DataSize.MEGABYTE;
+                    return Unit.MEGABYTE;
                 case "mb":
                 case "Mb":
-                    return DataSize.MEGABIT;
+                    return Unit.MEGABIT;
                 case "GB":
-                    return DataSize.GIGABYTE;
+                    return Unit.GIGABYTE;
                 case "Gb":
                 case "gb":
-                    return DataSize.GIGABIT;
+                    return Unit.GIGABIT;
                 case "TB":
-                    return DataSize.TERABYTE;
+                    return Unit.TERABYTE;
                 case "Tb":
                 case "tb":
-                    return DataSize.TERABIT;
+                    return Unit.TERABIT;
                 case "PB":
-                    return DataSize.PETABYTE;
+                    return Unit.PETABYTE;
                 case "Pb":
                 case "pb":
-                    return DataSize.PETABIT;
+                    return Unit.PETABIT;
                 default:
                     throw new ArgumentOutOfRangeException("Unrecognized abbreviation for data size unit " + abbreviation);
             }
         }
 
-        public static double scaleTo(ulong inputBytes, DataSize destinationScale) {
-            return inputBytes * 8.0 / destinationScale.asBits();
+        public static double scaleTo(ulong inputBytes, Unit destinationScale) {
+            return inputBytes * 8.0 / toBits(destinationScale);
         }
 
-        public static (double value, DataSize unit) scaleAutomatically(ulong inputBytes, bool toBytesNotBits) {
+        public static (double value, Unit unit) scaleAutomatically(ulong inputBytes, bool toBytesNotBits) {
             int orderOfMagnitude = (int) Math.Max(0, Math.Floor(Math.Log(inputBytes, toBytesNotBits ? 1024 : 1000)));
-            DataSize unit = forMagnitude(orderOfMagnitude, toBytesNotBits);
+            Unit unit = forMagnitude(orderOfMagnitude, toBytesNotBits);
             double scaledValue = scaleTo(inputBytes, unit);
             return (scaledValue, unit);
         }

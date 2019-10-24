@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace DataSizeUnits {
 
-    public class DataSizeFormatter: IFormatProvider, ICustomFormatter {
+    internal class DataSizeFormatter: IFormatProvider, ICustomFormatter {
 
         public object GetFormat(Type formatType) {
             return formatType == typeof(ICustomFormatter) ? this : null;
@@ -36,12 +36,12 @@ namespace DataSizeUnits {
             }
 
             if (unitString.ToLowerInvariant() == "a") {
-                (double scaledValue, DataSize scaledUnit) = DataSizeMethods.scaleAutomatically(bytes, unitString == "A");
+                (double scaledValue, DataSize.Unit scaledUnit) = DataSize.scaleAutomatically(bytes, unitString == "A");
                 return DataSizeFormatter.format(scaledValue, scaledUnit, precision);
             } else {
                 try {
-                    DataSize unit = DataSizeMethods.forAbbreviation(unitString);
-                    double scaledValue = DataSizeMethods.scaleTo(bytes, unit);
+                    DataSize.Unit unit = DataSize.forAbbreviation(unitString);
+                    double scaledValue = DataSize.scaleTo(bytes, unit);
                     return DataSizeFormatter.format(scaledValue, unit, precision);
                 } catch (ArgumentOutOfRangeException) {
                     return handleOtherFormats(format, arg);
@@ -49,11 +49,11 @@ namespace DataSizeUnits {
             }
         }
 
-        private static string format(double value, DataSize unit, int precision) {
+        private static string format(double value, DataSize.Unit unit, int precision) {
             var culture = (CultureInfo) CultureInfo.CurrentCulture.Clone();
             culture.NumberFormat.NumberDecimalDigits = precision;
 
-            return value.ToString("N", culture) + " " + unit.toAbbreviation();
+            return value.ToString("N", culture) + " " + DataSize.toAbbreviation(unit);
         }
 
         private static string handleOtherFormats(string format, object arg) {

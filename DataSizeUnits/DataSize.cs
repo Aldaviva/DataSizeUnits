@@ -168,41 +168,51 @@ namespace DataSizeUnits {
                     return Unit.BIT;
                 case "kB":
                 case "KB":
+                case "K":
                     return Unit.KILOBYTE;
                 case "kb":
                 case "Kb":
+                case "k":
                     return Unit.KILOBIT;
                 case "MB":
+                case "M":
                     return Unit.MEGABYTE;
                 case "mb":
                 case "Mb":
+                case "m":
                     return Unit.MEGABIT;
                 case "GB":
+                case "G":
                     return Unit.GIGABYTE;
                 case "Gb":
                 case "gb":
+                case "g":
                     return Unit.GIGABIT;
                 case "TB":
+                case "T":
                     return Unit.TERABYTE;
                 case "Tb":
                 case "tb":
+                case "t":
                     return Unit.TERABIT;
                 case "PB":
+                case "P":
                     return Unit.PETABYTE;
                 case "Pb":
                 case "pb":
+                case "p":
                     return Unit.PETABIT;
                 default:
                     throw new ArgumentOutOfRangeException("Unrecognized abbreviation for data size unit " + abbreviation);
             }
         }
 
-        public static double scaleTo(ulong inputBytes, Unit destinationScale) {
+        public static double scaleTo(long inputBytes, Unit destinationScale) {
             return inputBytes * 8.0 / toBits(destinationScale);
         }
 
-        public static (double value, Unit unit) scaleAutomatically(ulong inputBytes, bool toBytesNotBits) {
-            int orderOfMagnitude = (int) Math.Max(0, Math.Floor(Math.Log(inputBytes, toBytesNotBits ? 1024 : 1000)));
+        public static (double value, Unit unit) scaleAutomatically(long inputBytes, bool toBytesNotBits) {
+            int orderOfMagnitude = (int) Math.Max(0, Math.Floor(Math.Log(Math.Abs(inputBytes), toBytesNotBits ? 1024 : 1000)));
             Unit unit = forMagnitude(orderOfMagnitude, toBytesNotBits);
             double scaledValue = scaleTo(inputBytes, unit);
             return (scaledValue, unit);

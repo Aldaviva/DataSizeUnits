@@ -7,13 +7,13 @@ namespace Tests {
     public class DataSizeTests {
 
         [Theory, MemberData(nameof(autoScaleData))]
-        public void autoScale(ulong inputBytes, double expectedSize, DataSize.Unit expectedUnit, bool useBytes) {
+        public void autoScale(long inputBytes, double expectedSize, DataSize.Unit expectedUnit, bool useBytes) {
             (double actualSize, DataSize.Unit actualUnit) = DataSize.scaleAutomatically(inputBytes, useBytes);
             Assert.Equal(expectedSize, actualSize, 3);
             Assert.Equal(expectedUnit, actualUnit);
         }
 
-        public static TheoryData<ulong, double, DataSize.Unit, bool> autoScaleData => new TheoryData<ulong, double, DataSize.Unit, bool> {
+        public static TheoryData<long, double, DataSize.Unit, bool> autoScaleData => new TheoryData<long, double, DataSize.Unit, bool> {
             { 0, 0.0, DataSize.Unit.BYTE, true },
             { 1, 1, DataSize.Unit.BYTE, true },
             { 1023, 1023.0, DataSize.Unit.BYTE, true },
@@ -35,12 +35,12 @@ namespace Tests {
         };
 
         [Theory, MemberData(nameof(scaleToData))]
-        public void manualScale(ulong inputBytes, DataSize.Unit inputDestinationScale, double expectedValue) {
+        public void manualScale(long inputBytes, DataSize.Unit inputDestinationScale, double expectedValue) {
             double actualValue = DataSize.scaleTo(inputBytes, inputDestinationScale);
             Assert.Equal(expectedValue, actualValue, 3);
         }
 
-        public static TheoryData<ulong, DataSize.Unit, double> scaleToData => new TheoryData<ulong, DataSize.Unit, double> {
+        public static TheoryData<long, DataSize.Unit, double> scaleToData => new TheoryData<long, DataSize.Unit, double> {
             { 0, DataSize.Unit.BYTE, 0 },
             { 0, DataSize.Unit.BIT, 0 },
             { 0, DataSize.Unit.PETABYTE, 0 },

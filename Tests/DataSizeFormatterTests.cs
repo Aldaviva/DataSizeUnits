@@ -36,6 +36,7 @@ namespace Tests {
 
         public static TheoryData<ulong, string, string> unitData = new TheoryData<ulong, string, string> {
             { 9_995_326_316_544, "B", "9,995,326,316,544 B" },
+            { 9_995_326_316_544, "K", "9,761,060,856 KB" },
             { 9_995_326_316_544, "KB", "9,761,060,856 KB" },
             { 9_995_326_316_544, "MB", "9,532,286 MB" },
             { 9_995_326_316_544, "GB", "9,309 GB" },
@@ -49,6 +50,7 @@ namespace Tests {
             { 9_995_326_316_544, "petabyte", "0 PB" },
             { 9_995_326_316_544_000, "b", "79,962,610,532,352,000 b" },
             { 9_995_326_316_544_000, "kb", "79,962,610,532,352 kb" },
+            { 9_995_326_316_544_000, "k", "79,962,610,532,352 kb" },
             { 9_995_326_316_544_000, "mb", "79,962,610,532 mb" },
             { 9_995_326_316_544_000, "gb", "79,962,611 gb" },
             { 9_995_326_316_544_000, "tb", "79,963 tb" },
@@ -90,6 +92,12 @@ namespace Tests {
             const DataSize.Unit madeUpEnumValue = (DataSize.Unit) 9999;
             Assert.Throws<ArgumentOutOfRangeException>(() => DataSize.toBits(madeUpEnumValue));
             Assert.Throws<ArgumentOutOfRangeException>(() => DataSize.toAbbreviation(madeUpEnumValue));
+        }
+
+        [Fact]
+        public void negativeNumbers() {
+            string actual = string.Format(DataSize.FORMATTER, "{0:K0}", -1024);
+            Assert.Equal("-1 KB", actual);
         }
 
     }

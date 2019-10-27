@@ -19,9 +19,9 @@ namespace DataSizeUnits {
                 format = "B";
             }
 
-            ulong bytes;
+            long bytes;
             try {
-                bytes = Convert.ToUInt64(arg);
+                bytes = Convert.ToInt64(arg);
             } catch (Exception) {
                 return handleOtherFormats(format, arg);
             }

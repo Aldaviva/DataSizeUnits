@@ -23,7 +23,7 @@ namespace DataSizeUnits {
 
         }
 
-        public static ulong toBits(Unit source) {
+        private static ulong toBits(Unit source) {
             switch (source) {
                 case Unit.BYTE:
                     return 8L;
@@ -85,7 +85,7 @@ namespace DataSizeUnits {
             }
         }
 
-        public static Unit forMagnitude(int orderOfMagnitude, bool useBytes) {
+        private static Unit forMagnitude(int orderOfMagnitude, bool useBytes) {
             switch (orderOfMagnitude) {
                 case 0:
                     return useBytes ? Unit.BYTE : Unit.BIT;
@@ -207,14 +207,18 @@ namespace DataSizeUnits {
             }
         }
 
-        public static double scaleTo(long inputBytes, Unit destinationScale) {
+        public static double convert(long inputBytes, Unit destinationScale) {
             return inputBytes * 8.0 / toBits(destinationScale);
         }
 
-        public static (double value, Unit unit) scaleAutomatically(long inputBytes, bool toBytesNotBits) {
+        public static double convert(double inputSize, Unit inputScale, Unit destinationScale) {
+            return inputSize * toBits(inputScale) / toBits(destinationScale);
+        }
+
+        public static (double value, Unit unit) convert(long inputBytes, bool toBytesNotBits = true) {
             int orderOfMagnitude = (int) Math.Max(0, Math.Floor(Math.Log(Math.Abs(inputBytes), toBytesNotBits ? 1024 : 1000)));
             Unit unit = forMagnitude(orderOfMagnitude, toBytesNotBits);
-            double scaledValue = scaleTo(inputBytes, unit);
+            double scaledValue = convert(inputBytes, unit);
             return (scaledValue, unit);
         }
 

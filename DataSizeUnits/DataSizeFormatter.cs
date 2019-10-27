@@ -32,16 +32,16 @@ namespace DataSizeUnits {
             }
 
             if (!int.TryParse(Regex.Match(format, @"\d+$").Value, out int precision)) {
-                precision = 0;
+                precision = -1;
             }
 
             if (unitString.ToLowerInvariant() == "a") {
-                (double scaledValue, DataSize.Unit scaledUnit) = DataSize.scaleAutomatically(bytes, unitString == "A");
+                (double scaledValue, DataSize.Unit scaledUnit) = DataSize.convert(bytes, unitString == "A");
                 return DataSizeFormatter.format(scaledValue, scaledUnit, precision);
             } else {
                 try {
                     DataSize.Unit unit = DataSize.forAbbreviation(unitString);
-                    double scaledValue = DataSize.scaleTo(bytes, unit);
+                    double scaledValue = DataSize.convert(bytes, unit);
                     return DataSizeFormatter.format(scaledValue, unit, precision);
                 } catch (ArgumentOutOfRangeException) {
                     return handleOtherFormats(format, arg);
@@ -51,7 +51,9 @@ namespace DataSizeUnits {
 
         private static string format(double value, DataSize.Unit unit, int precision) {
             var culture = (CultureInfo) CultureInfo.CurrentCulture.Clone();
-            culture.NumberFormat.NumberDecimalDigits = precision;
+            if (precision >= 0) {
+                culture.NumberFormat.NumberDecimalDigits = precision;
+            }
 
             return value.ToString("N", culture) + " " + DataSize.toAbbreviation(unit);
         }

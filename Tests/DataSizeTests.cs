@@ -8,7 +8,7 @@ namespace Tests {
 
         [Theory, MemberData(nameof(autoScaleData))]
         public void autoScale(long inputBytes, double expectedSize, DataSize.Unit expectedUnit, bool useBytes) {
-            (double actualSize, DataSize.Unit actualUnit) = DataSize.scaleAutomatically(inputBytes, useBytes);
+            (double actualSize, DataSize.Unit actualUnit) = DataSize.convert(inputBytes, useBytes);
             Assert.Equal(expectedSize, actualSize, 3);
             Assert.Equal(expectedUnit, actualUnit);
         }
@@ -36,7 +36,7 @@ namespace Tests {
 
         [Theory, MemberData(nameof(scaleToData))]
         public void manualScale(long inputBytes, DataSize.Unit inputDestinationScale, double expectedValue) {
-            double actualValue = DataSize.scaleTo(inputBytes, inputDestinationScale);
+            double actualValue = DataSize.convert(inputBytes, inputDestinationScale);
             Assert.Equal(expectedValue, actualValue, 3);
         }
 
@@ -54,8 +54,14 @@ namespace Tests {
         };
 
         [Fact]
+        public void scaleUnitToUnit() {
+            double actual = DataSize.convert(150, DataSize.Unit.MEGABIT, DataSize.Unit.MEGABYTE);
+            Assert.Equal(17.8813934326171875, actual, 3);
+        }
+
+        [Fact]
         public void unsupportedMagnitude() {
-            Assert.Throws<ArgumentOutOfRangeException>(() => DataSize.forMagnitude(6, true));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DataSize.convert(long.MaxValue, true));
         }
 
     }

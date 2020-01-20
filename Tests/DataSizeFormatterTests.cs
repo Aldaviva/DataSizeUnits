@@ -111,6 +111,7 @@ namespace Tests {
             const Unit madeUpEnumValue = (Unit) 9999;
             Assert.Throws<ArgumentOutOfRangeException>(() => new DataSize(1).ConvertToUnit(madeUpEnumValue));
             Assert.Throws<ArgumentOutOfRangeException>(() => madeUpEnumValue.ToAbbreviation());
+            Assert.Throws<ArgumentOutOfRangeException>(() => madeUpEnumValue.ToName());
         }
 
         [Fact]

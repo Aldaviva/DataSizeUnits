@@ -24,16 +24,29 @@ Convert and format data size units in .NET (bits, bytes, kilobits, kilobytes, an
         ```
  	- The unit will be automatically selected so the value is greater than or equal to 1 of that unit, and less than 1 of the next largest unit. For example, 2,097,152 bytes is greater than or equal to 1 MB and less than 1 GB, so it is normalized to MB.
 
-- **Parse** unit names and abbreviations
+- **Parse and format** unit names and abbreviations
 	- Megabyte, MByte, mebibyte, MiB, MB, and M are all megabytes
         ```cs
-        Unit unit = DataSize.ParseUnit("mib");
+        Unit unit = DataSize.ParseUnit("mb");
         // unit == Unit.Megabyte
         ```
-	- Default abbreviations for each unit are of the short, case-sensitive forms.
+	- Abbreviations for each unit are of the short, case-sensitive forms.
         ```cs
         string abbreviation = Unit.Terabyte.toAbbreviation();
         // abbreviation == "TB"
+        ```
+        ```cs
+        string iecAbbreviation = Unit.Terabyte.toAbbreviation(true);
+        // iecAbbreviation = "TiB";
+        ```
+    - Get the unit names in JEDEC (`MB`) or IEC (`MiB`) variants.
+        ```cs
+        string name = Unit.Terabyte.ToName();
+        // name = "terabyte";
+        ```
+        ```cs
+        string iecName = Unit.Terabyte.ToName(true);
+        // iecName = "tebibyte";
         ```
 
 - **Format** bytes as a string with different unit and precision options
@@ -51,8 +64,8 @@ Convert and format data size units in .NET (bits, bytes, kilobits, kilobytes, an
         // formatted == "Size: 1.5 KB"
         ```
     - The format specifier (like `KB1` above) is made up of two optional parts, the destination unit (`KB`) and the precision (`1`).
-    - The destination unit (`KB`) is the data size unit to which you want the input bytes to be converted. You can pass any data size unit abbreviation. Case matters for ambiguous units, like `kB`/`KB`/`K` for kilobytes and `kb`/`k`/`Kb` for kilobits. Unambiguous units like `kilobyte`/`kbyte`/`kibibyte`/`kib` can be provided in any case. You can also specify **`A`** to automatically normalize the unit of bytes and higher magnitudes, which is the default behavior if you omit the destination unit, and **`a`** normalizes to bits.
-    - The precision (`1`) is the number of digits after the decimal place. If you omit this, it will use the default number format value for the culture of the current thread, for example 2. Set this to `0` if you want integers only.
+    - The destination unit (`KB`) is the data size unit to which you want the input bytes to be converted. You can also specify **`A`** to automatically normalize the unit of bytes and higher magnitudes, which is the default behavior if you omit the destination unit, and **`a`** normalizes to bits. Case matters for ambiguous units, like `kB`/`KB`/`K` for kilobytes and `kb`/`k`/`Kb` for kilobits. Unambiguous units like `kilobyte`/`kbyte`/`kibibyte`/`kib` can be provided in any case. 
+    - The precision (`1`) is the number of digits after the decimal place. If you omit this, it will use the default number value for the culture of the current thread, for example 2. Set this to `0` if you want integers only.
 
 ## Install
 [This package is available in the NuGet Gallery.](https://www.nuget.org/packages/DataSizeUnits/)

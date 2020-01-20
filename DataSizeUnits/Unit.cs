@@ -83,28 +83,27 @@ namespace DataSizeUnits {
 
     public static class UnitExtensions {
 
-        /// <summary>
-        /// <para>Get the abbreviation for this unit.</para>
-        /// <para>Byte values are always uppercase: B, KB, MB, GB, TB, PB, EB.</para>
-        /// <para>Bit values are always lowercase: b, kb, mb, gb, tb, pb, eb.</para>
-        /// </summary>
-        /// <returns>Two letter abbreviation (one letter for bit or byte).</returns>
-        public static string ToAbbreviation(this Unit unit) {
+        /// <summary>Get the short version of this unit's name (1-3 characters), such as <c>MB</c>.</summary>
+        /// <param name="unit"></param>
+        /// <param name="iec"><c>true</c> to return the IEC abbreviation (KiB, MiB, etc.), or <c>false</c> (the default) to return
+        /// the JEDEC abbreviation (KB, MB, etc.)</param>
+        /// <returns>The abbreviation for this unit.</returns>
+        public static string ToAbbreviation(this Unit unit, bool iec=false) {
             switch (unit) {
                 case Unit.Byte:
                     return "B";
                 case Unit.Kilobyte:
-                    return "KB";
+                    return iec ? "KiB" : "KB";
                 case Unit.Megabyte:
-                    return "MB";
+                    return iec ? "MiB" : "MB";
                 case Unit.Gigabyte:
-                    return "GB";
+                    return iec ? "GiB" : "GB";
                 case Unit.Terabyte:
-                    return "TB";
+                    return iec ? "TiB" : "TB";
                 case Unit.Petabyte:
-                    return "PB";
+                    return iec ? "PiB" : "PB";
                 case Unit.Exabyte:
-                    return "EB";
+                    return iec ? "EiB" : "EB";
 
                 case Unit.Bit:
                     return "b";
@@ -124,6 +123,54 @@ namespace DataSizeUnits {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
             }
+        }
+
+        /// <summary>
+        /// Get the long version of this unit's name, such as <c>megabyte</c>.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="iec"><c>true</c> to return the IEC name (kibibyte, mebibyte, etc.), or <c>false</c> (the default) to return
+        /// the JEDEC name (kilobyte, megabyte, etc.)</param>
+        /// <returns>The name of this unit.</returns>
+        public static string ToName(this Unit unit, bool iec = false) {
+            switch (unit) {
+                case Unit.Byte:
+                    return "byte";
+                case Unit.Kilobyte:
+                    return iec ? "kibibyte" : "kilobyte";
+                case Unit.Megabyte:
+                    return iec ? "mebibyte" : "megabyte";
+                case Unit.Gigabyte:
+                    return iec ? "gibibyte" : "gigabyte";
+                case Unit.Terabyte:
+                    return iec ? "tebibyte" : "terabyte";
+                case Unit.Petabyte:
+                    return iec ? "pebibyte" : "petabyte";
+                case Unit.Exabyte:
+                    return iec ? "exbibyte" : "exabyte";
+
+                case Unit.Bit:
+                    return "bit";
+                case Unit.Kilobit:
+                    return "kilobit";
+                case Unit.Megabit:
+                    return "megabit";
+                case Unit.Gigabit:
+                    return "gigabit";
+                case Unit.Terabit:
+                    return "terabit";
+                case Unit.Petabit:
+                    return "petabit";
+                case Unit.Exabit:
+                    return "exabit";
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
+            }
+        }
+
+        public static DataSize Quantity(this Unit unit, double quantity) {
+            return new DataSize(quantity, unit);
         }
 
     }

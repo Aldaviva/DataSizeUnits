@@ -9,10 +9,12 @@ namespace DataSizeUnits {
     /// <para><c>var kilobyte = new DataSize(1, Unit.Kilobyte);</c></para>
     /// </summary>
     [Serializable]
-    public struct DataSize {
+    public struct DataSize: IComparable<DataSize> {
 
         public double Quantity;
         public Unit Unit;
+
+        private double AsBits => Quantity * CountBitsInUnit(Unit);
 
         /// <summary>
         /// <para>Create a new instance with the given quantity of the given unit of data.</para>
@@ -53,7 +55,7 @@ namespace DataSizeUnits {
         /// <param name="destinationUnit">The data size unit that the resulting instance should use.</param>
         /// <returns>A new instance with the converted quantity and unit. The original instance is unchanged.</returns>
         public DataSize ConvertToUnit(Unit destinationUnit) {
-            return new DataSize(Quantity * CountBitsInUnit(Unit) / CountBitsInUnit(destinationUnit), destinationUnit);
+            return new DataSize(AsBits / CountBitsInUnit(destinationUnit), destinationUnit);
         }
 
         /// <summary>
@@ -265,6 +267,58 @@ namespace DataSizeUnits {
 
             return Quantity.ToString("N", culture) + " " + Unit.ToAbbreviation();
         }
+
+        public bool Equals(DataSize other) {
+            return AsBits.Equals(other.AsBits);
+        }
+
+        public override bool Equals(object obj) {
+            return obj is DataSize other && Equals(other);
+        }
+
+        public override int GetHashCode() {
+            return AsBits.GetHashCode();
+        }
+
+        public int CompareTo(DataSize other) {
+            return AsBits.CompareTo(other.AsBits);
+        }
+
+        public static bool operator <(DataSize a, DataSize b) => a.AsBits < b.AsBits;
+
+        public static bool operator >(DataSize a, DataSize b) => a.AsBits > b.AsBits;
+
+        public static bool operator <=(DataSize a, DataSize b) => a.AsBits <= b.AsBits;
+
+        public static bool operator >=(DataSize a, DataSize b) => a.AsBits >= b.AsBits;
+
+        public static DataSize operator +(DataSize a, DataSize b) {
+            return new DataSize(a.Quantity + b.ConvertToUnit(a.Unit).Quantity, a.Unit);
+        }
+
+        public static DataSize operator -(DataSize a, DataSize b) {
+            return new DataSize(a.Quantity - b.ConvertToUnit(a.Unit).Quantity, a.Unit);
+        }
+
+        public static DataSize operator *(DataSize a, double b) {
+            return new DataSize(a.Quantity * b, a.Unit);
+        }
+
+        public static DataSize operator /(DataSize a, double b) {
+            if (!b.Equals(0)) {
+                return new DataSize(a.Quantity / b, a.Unit);
+            } else {
+                throw new DivideByZeroException();
+            }
+        }
+
+        public static bool operator ==(DataSize a, DataSize b) => a.Equals(b);
+
+        public static bool operator !=(DataSize a, DataSize b) => !a.Equals(b);
+
+        public static implicit operator long(DataSize dataSize) => (long) dataSize.AsBits / 8;
+
+        public static implicit operator DataSize(long bytes) => new DataSize(bytes);
 
     }
 

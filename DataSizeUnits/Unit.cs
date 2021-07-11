@@ -88,7 +88,7 @@ namespace DataSizeUnits {
         /// <param name="iec"><c>true</c> to return the IEC abbreviation (KiB, MiB, etc.), or <c>false</c> (the default) to return
         /// the JEDEC abbreviation (KB, MB, etc.)</param>
         /// <returns>The abbreviation for this unit.</returns>
-        public static string ToAbbreviation(this Unit unit, bool iec=false) {
+        public static string ToAbbreviation(this Unit unit, bool iec = false) {
             switch (unit) {
                 case Unit.Byte:
                     return "B";
@@ -163,6 +163,31 @@ namespace DataSizeUnits {
                     return "petabit";
                 case Unit.Exabit:
                     return "exabit";
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(unit), unit, null);
+            }
+        }
+
+        public static bool IsMultipleOfBits(this Unit unit) {
+            switch (unit) {
+                case Unit.Byte:
+                case Unit.Kilobyte:
+                case Unit.Megabyte:
+                case Unit.Gigabyte:
+                case Unit.Terabyte:
+                case Unit.Petabyte:
+                case Unit.Exabyte:
+                    return false;
+
+                case Unit.Bit:
+                case Unit.Kilobit:
+                case Unit.Megabit:
+                case Unit.Gigabit:
+                case Unit.Terabit:
+                case Unit.Petabit:
+                case Unit.Exabit:
+                    return true;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(unit), unit, null);

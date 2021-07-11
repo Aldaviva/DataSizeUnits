@@ -9,12 +9,14 @@ namespace DataSizeUnits {
     /// <para><c>var kilobyte = new DataSize(1, Unit.Kilobyte);</c></para>
     /// </summary>
     [Serializable]
-    public struct DataSize: IComparable<DataSize> {
+    public struct DataSize: IComparable<DataSize>, IFormattable {
 
         public double Quantity;
         public Unit Unit;
 
         private double AsBits => Quantity * CountBitsInUnit(Unit);
+
+        private static readonly DataSizeFormatter Formatter = new DataSizeFormatter();
 
         /// <summary>
         /// <para>Create a new instance with the given quantity of the given unit of data.</para>
@@ -257,15 +259,29 @@ namespace DataSizeUnits {
         /// </summary>
         /// <param name="precision">Number of digits after the decimal place to use when formatting the quantity as a number. The
         /// default for en-US is 2. To use the default for the current culture, pass the value <c>-1</c>, or call
-        /// <see cref="ToString()"/></param>.
+        /// <see cref="ToString()"/>.</param>
+        /// <param name="normalize"><c>true</c> to first normalize this instance to an automatically-chosen unit before converting it
+        /// to a string, or <c>false</c> (the default) to use the original unit this instance was defined with.</param>
         /// <returns>String with the formatted data quantity and unit abbreviation, separated by a space.</returns>
-        public string ToString(int precision) {
-            var culture = (CultureInfo) CultureInfo.CurrentCulture.Clone();
-            if (precision >= 0) {
-                culture.NumberFormat.NumberDecimalDigits = precision;
-            }
+        public string ToString(int precision, bool normalize = false) {
+            if (normalize) {
+                return Normalize(Unit.IsMultipleOfBits()).ToString(precision);
+            } else {
+                var culture = (CultureInfo) CultureInfo.CurrentCulture.Clone();
+                if (precision >= 0) {
+                    culture.NumberFormat.NumberDecimalDigits = precision;
+                }
 
-            return Quantity.ToString("N", culture) + " " + Unit.ToAbbreviation();
+                return Quantity.ToString("N", culture) + " " + Unit.ToAbbreviation();
+            }
+        }
+
+        public string ToString(string format, IFormatProvider formatProvider = null) {
+            return Formatter.Format(format, this, Formatter);
+        }
+
+        public string ToString(int precision, Unit unit) {
+            return ConvertToUnit(unit).ToString(precision);
         }
 
         public bool Equals(DataSize other) {
@@ -307,6 +323,14 @@ namespace DataSizeUnits {
         public static DataSize operator /(DataSize a, double b) {
             if (!b.Equals(0)) {
                 return new DataSize(a.Quantity / b, a.Unit);
+            } else {
+                throw new DivideByZeroException();
+            }
+        }
+
+        public static double operator /(DataSize a, DataSize b) {
+            if (!b.Quantity.Equals(0)) {
+                return a.AsBits / b.AsBits;
             } else {
                 throw new DivideByZeroException();
             }

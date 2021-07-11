@@ -45,18 +45,21 @@ namespace DataSizeUnits {
                 return null;
             }
 
-            DataSize dataSize;
-            dataSize.Unit = Unit.Byte;
-
             if (string.IsNullOrEmpty(format)) {
                 format = DefaultFormat;
             }
 
-            try {
-                long bytes = Convert.ToInt64(arg);
-                dataSize.Quantity = bytes;
-            } catch (Exception) {
-                return HandleOtherFormats(format, arg);
+            DataSize dataSize;
+            if (arg is DataSize size) {
+                dataSize = size;
+            } else {
+                dataSize.Unit = Unit.Byte;
+                try {
+                    long bytes = Convert.ToInt64(arg);
+                    dataSize.Quantity = bytes;
+                } catch (Exception) {
+                    return HandleOtherFormats(format, arg);
+                }
             }
 
             string unitString = Regex.Match(format, @"^[a-z]+", RegexOptions.IgnoreCase).Value;

@@ -1,4 +1,5 @@
-﻿using DataSizeUnits;
+﻿using System;
+using DataSizeUnits;
 using Xunit;
 
 namespace Tests {
@@ -85,6 +86,26 @@ namespace Tests {
             DataSize actual = Unit.Megabyte.Quantity(4);
             Assert.Equal(4, actual.Quantity);
             Assert.Equal(Unit.Megabyte, actual.Unit);
+        }
+
+        [Fact]
+        public void IsMultipleOfBits() {
+            Assert.False(Unit.Byte.IsMultipleOfBits());
+            Assert.False(Unit.Kilobyte.IsMultipleOfBits());
+            Assert.False(Unit.Megabyte.IsMultipleOfBits());
+            Assert.False(Unit.Gigabyte.IsMultipleOfBits());
+            Assert.False(Unit.Terabyte.IsMultipleOfBits());
+            Assert.False(Unit.Petabyte.IsMultipleOfBits());
+            Assert.False(Unit.Exabyte.IsMultipleOfBits());
+            Assert.True(Unit.Bit.IsMultipleOfBits());
+            Assert.True(Unit.Kilobit.IsMultipleOfBits());
+            Assert.True(Unit.Megabit.IsMultipleOfBits());
+            Assert.True(Unit.Gigabit.IsMultipleOfBits());
+            Assert.True(Unit.Terabit.IsMultipleOfBits());
+            Assert.True(Unit.Petabit.IsMultipleOfBits());
+            Assert.True(Unit.Exabit.IsMultipleOfBits());
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => ((Unit) 999999).IsMultipleOfBits());
         }
 
     }

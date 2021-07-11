@@ -141,15 +141,22 @@ namespace Tests {
         }
 
         [Fact]
-        public void Division() {
-            DataSize actual = new DataSize(6, Unit.Megabyte) / 3;
+        public void DivisionByDouble() {
+            DataSize actual = new DataSize(6, Unit.Megabyte) / 3.0;
             Assert.Equal(2, actual.Quantity);
             Assert.Equal(Unit.Megabyte, actual.Unit);
         }
 
         [Fact]
+        public void DivisionByDatasize() {
+            double actual = new DataSize(6, Unit.Megabyte) / new DataSize(3, Unit.Megabyte);
+            Assert.Equal(2, actual);
+        }
+
+        [Fact]
         public void DivisionByZero() {
-            Assert.Throws<DivideByZeroException>(() => new DataSize(1) / 0);
+            Assert.Throws<DivideByZeroException>(() => new DataSize(1) / 0.0);
+            Assert.Throws<DivideByZeroException>(() => new DataSize(1) / new DataSize(0));
         }
 
         [Fact]

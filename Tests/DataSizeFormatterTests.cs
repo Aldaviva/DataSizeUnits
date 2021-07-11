@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using DataSizeUnits;
 using Xunit;
 
@@ -12,11 +13,11 @@ namespace Tests {
         [MemberData(nameof(UnitData))]
         public void FormatUsingCustomFormatter(ulong inputBytes, string formatSyntax, string expectedOutput) {
             string formatString = "{0:" + formatSyntax + "}";
-            string actual = string.Format(new DataSizeFormatter(), formatString, inputBytes);
+            string actual       = string.Format(new DataSizeFormatter(), formatString, inputBytes);
             Assert.Equal(expectedOutput, actual);
         }
 
-        public static TheoryData<ulong, string, string> FormatData = new TheoryData<ulong, string, string> {
+        public static TheoryData<ulong, string, string> FormatData = new() {
             { 0, "", "0.00 B" },
             { 0, "A", "0.00 B" },
             { 1024, "A", "1.00 KB" },
@@ -28,7 +29,7 @@ namespace Tests {
             { 1024L * 1024 * 1024 * 1024 * 1024 * 1024, "A", "1.00 EB" }
         };
 
-        public static TheoryData<ulong, string, string> PrecisionData = new TheoryData<ulong, string, string> {
+        public static TheoryData<ulong, string, string> PrecisionData = new() {
             { 9_995_326_316_544, "A", "9.09 TB" },
             { 9_995_326_316_544, "A0", "9 TB" },
             { 9_995_326_316_544, "1", "9.1 TB" },
@@ -37,7 +38,7 @@ namespace Tests {
             { 9_995_326_316_544, "A3", "9.091 TB" }
         };
 
-        public static TheoryData<ulong, string, string> UnitData = new TheoryData<ulong, string, string> {
+        public static TheoryData<ulong, string, string> UnitData = new() {
             { 9_995_326_316_544, "B0", "9,995,326,316,544 B" },
             { 9_995_326_316_544, "K0", "9,761,060,856 KB" },
             { 9_995_326_316_544, "KB0", "9,761,060,856 KB" },
@@ -82,13 +83,31 @@ namespace Tests {
             Assert.Equal("1.41 MB", actual);
         }
 
-        [Theory, MemberData(nameof(OtherData))]
+        [Fact]
+        public void FormatUsingToStringAndFormatProvider() {
+            string actual = new DataSize(1474560).ToString("K1", CultureInfo.CurrentCulture);
+            Assert.Equal("1,440.0 KB", actual);
+        }
+
+        [Fact]
+        public void FormatUsingPrecisionAndUnit() {
+            string actual = new DataSize(1474560).ToString(2, Unit.Kilobyte);
+            Assert.Equal("1,440.00 KB", actual);
+        }
+
+        [Fact]
+        public void FormatUsingToStringAndNormalize() {
+            string actual = new DataSize(1474560).ToString(2, true);
+            Assert.Equal("1.41 MB", actual);
+        }
+
+        [Theory] [MemberData(nameof(OtherData))]
         public void HandleOtherFormats(object otherInput, string expectedOutput) {
             string actualOutput = string.Format(new DataSizeFormatter(), "{0:D}", otherInput);
             Assert.Equal(expectedOutput, actualOutput);
         }
 
-        public static TheoryData<object, string> OtherData = new TheoryData<object, string> {
+        public static TheoryData<object, string> OtherData = new() {
             { new DateTime(1988, 8, 17, 16, 30, 0), "Wednesday, August 17, 1988" },
             { new Unformattable(), "unformattable" },
             { null, "" }
@@ -118,6 +137,18 @@ namespace Tests {
         public void NegativeNumbers() {
             string actual = string.Format(new DataSizeFormatter(), "{0:K0}", -1024);
             Assert.Equal("-1 KB", actual);
+        }
+
+        [Fact]
+        public void ZeroBytes() {
+            string actual = string.Format(new DataSizeFormatter(), "{0:A1}", 0);
+            Assert.Equal("0.0 B", actual);
+        }
+
+        [Fact]
+        public void DataSizeArg() {
+            string actual = string.Format(new DataSizeFormatter(), "{0:A1}", new DataSize(0, Unit.Kilobyte));
+            Assert.Equal("0.0 B", actual);
         }
 
     }

@@ -11,13 +11,23 @@
     <Copyright>© 2022 Ben Hutchison</Copyright>
     <PackageProjectUrl>https://github.com/Aldaviva/DataSizeUnits</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Aldaviva/DataSizeUnits.git</RepositoryUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageTags>data-size data-units file-size storage-space byte kilobyte megabyte gigabyte bit kilobit megabit gigabit</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <IncludeSource>True</IncludeSource>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IncludeSource>true</IncludeSource>
     <IncludeSymbols>true</IncludeSymbols>   
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
+  <ItemGroup>
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' == 'Release'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace DataSizeUnits; 
+namespace DataSizeUnits;
 
 /// <summary>
 /// <para>An <see cref="IFormatProvider"/> for formatting bytes with unit conversion, numeric precision, and unit abbreviation. The input value is always a <see cref="long"/> of bytes.</para>

@@ -1,35 +1,45 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.2.0</Version>
-    <Authors>Ben Hutchison</Authors>
-    <Company>Ben Hutchison</Company>
-    <PackageId>DataSizeUnits</PackageId>
-    <Product>DataSizeUnits</Product>
-    <Description>Convert and format data size units in .NET (bits, bytes, kilobits, kilobytes, and others).</Description>
-    <Copyright>© 2023 Ben Hutchison</Copyright>
-    <PackageProjectUrl>https://github.com/Aldaviva/DataSizeUnits</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Aldaviva/DataSizeUnits.git</RepositoryUrl>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageTags>data-size data-units file-size storage-space byte kilobyte megabyte gigabyte bit kilobit megabit gigabit</PackageTags>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <IncludeSource>true</IncludeSource>
-    <IncludeSymbols>true</IncludeSymbols>   
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <LangVersion>latest</LangVersion>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+        <Version>2.2.0</Version>
+        <Authors>Ben Hutchison</Authors>
+        <Company>Ben Hutchison</Company>
+        <PackageId>DataSizeUnits</PackageId>
+        <Product>DataSizeUnits</Product>
+        <Description>Convert and format data size units in .NET (bits, bytes, kilobits, kilobytes, and others).</Description>
+        <Copyright>© 2023 Ben Hutchison</Copyright>
+        <PackageProjectUrl>https://github.com/Aldaviva/DataSizeUnits</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/Aldaviva/DataSizeUnits.git</RepositoryUrl>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+        <PackageTags>data-size data-units file-size storage-space byte kilobyte megabyte gigabyte bit kilobit megabit gigabit</PackageTags>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <IncludeSource>true</IncludeSource>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
+    </ItemGroup>
 
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' == 'Release'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
+    <!-- .NET Standard 2.0, .NET Framework, and .NET Core < 3.0 do not have built-in JSON support, and .NET Core 3.* lack JsonIgnoreAttribute -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+        <PackageReference Include="System.Text.Json" Version="[5.0.0,)" />
+    </ItemGroup>
+
+    <!-- .NET 5.0 and later have built-in JSON support with JsonIgnoreAttribute, so exclude the 400 KB of redundant DLLs -->
+    <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+        <PackageReference Include="System.Text.Json" Version="[5.0.0,)" PrivateAssets="All" />
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' == 'Release'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
 </Project>

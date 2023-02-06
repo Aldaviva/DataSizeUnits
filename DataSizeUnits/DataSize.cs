@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace DataSizeUnits;
 
@@ -11,8 +12,11 @@ namespace DataSizeUnits;
 [Serializable]
 public struct DataSize: IComparable<DataSize>, IFormattable {
 
+    [JsonInclude]
     public double Quantity;
-    public Unit   Unit;
+
+    [JsonInclude]
+    public Unit Unit;
 
     private double AsBits => Quantity * CountBitsInUnit(Unit);
 

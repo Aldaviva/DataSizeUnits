@@ -1,11 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29418.71
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataSizeUnits", "DataSizeUnits\DataSizeUnits.csproj", "{3469832B-5C75-46F3-AA5E-03C8246C06EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataSizeUnits", "DataSizeUnits\DataSizeUnits.csproj", "{3469832B-5C75-46F3-AA5E-03C8246C06EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D040A6DB-D810-4BC4-8CD7-2C13717D233B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{D040A6DB-D810-4BC4-8CD7-2C13717D233B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

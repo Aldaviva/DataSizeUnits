@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.1.1</Version>
+    <Version>2.2.0</Version>
     <Authors>Ben Hutchison</Authors>
     <Company>Ben Hutchison</Company>
     <PackageId>DataSizeUnits</PackageId>
     <Product>DataSizeUnits</Product>
     <Description>Convert and format data size units in .NET (bits, bytes, kilobits, kilobytes, and others).</Description>
-    <Copyright>© 2022 Ben Hutchison</Copyright>
+    <Copyright>© 2023 Ben Hutchison</Copyright>
     <PackageProjectUrl>https://github.com/Aldaviva/DataSizeUnits</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Aldaviva/DataSizeUnits.git</RepositoryUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -21,6 +21,8 @@
     <IncludeSymbols>true</IncludeSymbols>   
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

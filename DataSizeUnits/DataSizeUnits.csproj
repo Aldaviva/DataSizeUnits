@@ -1,21 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
-        <Version>3.0.0-beta2</Version>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Version>3.0.0</Version>
         <Authors>Ben Hutchison</Authors>
-        <Company>Ben Hutchison</Company>
-        <PackageId>DataSizeUnits</PackageId>
-        <Product>DataSizeUnits</Product>
-        <Description>Convert and format data size units in .NET (bits, bytes, kilobits, kilobytes, and others).</Description>
-        <Copyright>© 2025 Ben Hutchison</Copyright>
+        <Company>$(Authors)</Company>
+        <Description>Convert and format data size units (bits, bytes, kilobits, kilobytes, and others).</Description>
+        <Copyright>© 2026 $(Authors)</Copyright>
         <PackageProjectUrl>https://github.com/Aldaviva/DataSizeUnits</PackageProjectUrl>
         <RepositoryUrl>https://github.com/Aldaviva/DataSizeUnits.git</RepositoryUrl>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
         <PackageTags>data-size data-units file-size storage-space byte kilobyte megabyte gigabyte bit kilobit megabit gigabit</PackageTags>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSource>true</IncludeSource>
         <IncludeSymbols>true</IncludeSymbols>
@@ -23,19 +21,22 @@
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
         <PackageReadmeFile>Readme.md</PackageReadmeFile>
+        <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
     <ItemGroup>
         <AdditionalFiles Include="ExceptionAdjustments.txt" />
-        <None Include="..\Readme.md" Pack="true" PackagePath="\" />
+        <None Include="..\Readme.md;icon.png" Pack="true" PackagePath="\" />
+        <None Include="..\.github*\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
     </ItemGroup>
 
-    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' == 'Release'">
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true' or '$(Configuration)' != 'Debug'">
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     </PropertyGroup>
     

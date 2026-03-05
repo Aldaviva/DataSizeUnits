@@ -1,7 +1,3 @@
-﻿using DataSizeUnits;
-using System;
-using Xunit;
-
 namespace Tests;
 
 public class DataSizeTests {
@@ -170,6 +166,13 @@ public class DataSizeTests {
     [Fact]
     public void FromBytes() {
         DataSize actual = 1024;
+        Assert.Equal(1024, actual.Quantity);
+        Assert.Equal(Unit.Byte, actual.Unit);
+    }
+
+    [Fact]
+    public void FromUnsighedLong() {
+        DataSize actual = new(1024ul);
         Assert.Equal(1024, actual.Quantity);
         Assert.Equal(Unit.Byte, actual.Unit);
     }

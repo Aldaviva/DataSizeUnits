@@ -14,8 +14,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Unfuck Git
+      run: git config set --global core.autocrlf false
+
     - name: Clone
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Initialize test reporting
       uses: testspace-com/setup-testspace@v1
@@ -23,17 +26,17 @@ jobs:
         domain: ${{github.repository_owner}}
 
     - name: Restore
-      run: dotnet restore --verbosity normal
+      run: dotnet restore ${{ env.ProjectName }}
 
     - name: Build
-      run: dotnet build --no-restore --configuration Release --verbosity normal
+      run: dotnet build ${{ env.ProjectName }} --no-restore --configuration Release
 
     - name: Pack
-      run: dotnet pack ${{ env.ProjectName }} --no-build --configuration Release --verbosity normal
+      run: dotnet pack ${{ env.ProjectName }} --no-build --configuration Release
 
     - name: Test
       run: |
-        dotnet test --no-build --verbosity normal --configuration Release --collect:"XPlat Code Coverage" --settings Tests/Tests.runsettings --logger "trx;LogFileName=TestResults.xml"
+        dotnet test --configuration Release --collect:"XPlat Code Coverage" --settings Tests/Tests.runsettings --logger "trx;LogFileName=TestResults.xml"
         Out-File -InputObject "TEST_EXIT_CODE=$LASTEXITCODE" -FilePath $env:GITHUB_ENV -Append -Encoding UTF8
         Get-ChildItem Tests\TestResults\*\coverage.info | Rename-Item -NewName lcov.info
         exit 0
@@ -50,7 +53,7 @@ jobs:
       run: exit $env:TEST_EXIT_CODE
 
     - name: Upload package
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ env.ProjectName }}.nupkg
         path: ${{ env.ProjectName }}/bin/Release/*.*nupkg

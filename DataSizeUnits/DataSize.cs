@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 
 namespace DataSizeUnits;
@@ -26,17 +25,17 @@ public readonly struct DataSize(double quantity, Unit unit): IComparable<DataSiz
     /// <summary>
     /// Create a new instance that represents 0 bytes.
     /// </summary>
-    public DataSize(): this(0, Unit.Byte) { }
+    public DataSize(): this(0, Unit.Byte) {}
 
     /// <summary>
     /// <para>Create a new instance with the given quantity of bytes.</para>
     /// <para><c>var fileSize = new DataSize(new FileInfo(fileName).Length);</c></para>
     /// </summary>
     /// <param name="bytes">How many bytes to represent.</param>
-    public DataSize(long bytes): this(bytes, Unit.Byte) { }
+    public DataSize(long bytes): this(bytes, Unit.Byte) {}
 
     /// <inheritdoc cref="DataSize(long)" />
-    public DataSize(ulong bytes): this(bytes, Unit.Byte) { }
+    public DataSize(ulong bytes): this(bytes, Unit.Byte) {}
 
     /// <summary>
     /// <para>Convert the data size to the automatically-chosen best fit unit. This will be the largest unit that represents

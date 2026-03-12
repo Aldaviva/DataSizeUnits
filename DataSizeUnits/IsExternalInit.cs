@@ -8,4 +8,4 @@ namespace System.Runtime.CompilerServices;
 /// <para>From <see href="https://stackoverflow.com/a/62656145/979493"/></para>
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
-internal sealed class IsExternalInit {}
+internal sealed class IsExternalInit;

@@ -15,80 +15,92 @@ dotnet add package DataSizeUnits
 ```
 
 ## Features
-- **Convert** between many units of digital information, including bits, bytes, and their higher-order units (kilobits and kilobytes and the rest, up to and including exabits and exabytes)
-	- 150 Mbit → 17.8 MByte
+- **Convert** between many units of digital information, including bits, bytes, and their higher-order units (kilobits and kilobytes and the rest, up to and including quettabits and quettabytes)
+    - 150 Mbit → 17.8 MByte
         ```cs
-        DataSize sizeInMegabytes = new DataSize(150, Unit.Megabit).ConvertToUnit(Unit.Megabyte);
-        // sizeInMegabytes.Quantity == 17.8
-        // sizeInMegabytes.Unit == Unit.Megabyte
+        double sizeInMegabytes = new DataSize(150, DataSizeUnit.Megabit).AsUnit(DataSizeUnit.Megabyte);
+        // sizeInMegabytes == 17.8
         ```
 
 - **Normalize** a number of bytes to an automatically-selected unit based on its magnitude
- 	- 2,097,152 bytes → 2 MB
+    - 2,097,152 bytes → 2 MB
         ```cs
-        DataSize normalized = new DataSize(2_097_152).Normalize();
-        // normalized.Quantity == 2.0
-        // normalized.Unit == Unit.Megabyte
+        (double quantity, DataSizeUnit unit) normalized = new DataSize(2_097_152).AsAutomaticUnit();
+        // normalized.quantity == 2.0
+        // normalized.unit == DataSizeUnit.Megabyte
         ```
- 	- 2,097,152 bytes → 16.78 mbit
+    - 2,097,152 bytes → 16.78 mbit
         ```cs
-        DataSize normalized = new DataSize(2_097_152).Normalize(true); // pass true to get bits units instead of bytes
-        // normalized.Quantity == 16.78
-        // normalized.Unit == Unit.Megabit
+        normalized = new DataSize(2_097_152).AsAutomaticUnit(true); // pass true to get bits units instead of bytes
+        // normalized.quantity == 16.78
+        // normalized.unit == DataSizeUnit.Megabit
         ```
- 	- The unit will be automatically selected so the value is greater than or equal to 1 of that unit, and less than 1 of the next largest unit. For example, 2,097,152 bytes is greater than or equal to 1 MB and less than 1 GB, so it is normalized to MB.
+    - The unit will be automatically selected so the value is greater than or equal to 1 of that unit, and less than 1 of the next largest unit. For example, 2,097,152 bytes is greater than or equal to 1 MB and less than 1 GB, so it is normalized to MB.
+
+- **Parse** data sizes
+    - 1.5 MB → 1,572,864 bytes
+        ```cs
+        DataSize parsed = DataSize.Parse("1.5 MB");
+        // parsed.Bytes == 1572864
+        ```
 
 - **Parse and format** unit names and abbreviations
-	- Megabyte, MByte, mebibyte, MiB, MB, and M are all megabytes
+    - Megabyte, MByte, mebibyte, MiB, MB, and M are all megabytes
         ```cs
-        Unit unit = DataSize.ParseUnit("MB");
-        // unit == Unit.Megabyte
+        DataSizeUnit? unit = DataSizeUnit.Parse("MB");
+        // unit == DataSizeUnit.Megabyte
         ```
-	- Abbreviations for each unit are of the short, case-sensitive forms.
+    - Abbreviations for each unit are of the short, case-sensitive forms.
         ```cs
-        string abbreviation = Unit.Terabyte.ToAbbreviation();
+        string abbreviation = DataSizeUnit.Terabyte.ToAbbreviation();
         // abbreviation == "TB"
         ```
         ```cs
-        string iecAbbreviation = Unit.Terabyte.ToAbbreviation(true); // pass true for the IEC abbreviations (kibibyte, etc.)
-        // iecAbbreviation == "TiB";
+        string iecAbbreviation = DataSizeUnit.Terabyte.ToAbbreviation(true); // pass true for the IEC abbreviations (kibibyte, etc.)
+        // iecAbbreviation == "TiB"
         ```
-    - Get the unit names in JEDEC (`TB`) or IEC (`TiB`) variants.
+    - Get the unit names in JEDEC (TB) or IEC (TiB) variants.
         ```cs
-        string name = Unit.Terabyte.ToName();
-        // name == "terabyte";
+        string name = DataSizeUnit.Terabyte.ToName();
+        // name == "terabyte"
         ```
         ```cs
-        string iecName = Unit.Terabyte.ToName(true); // pass true for the IEC names (kibibyte, etc.)
-        // iecName == "tebibyte";
+        string iecName = DataSizeUnit.Terabyte.ToName(true); // pass true for the IEC names (kibibyte, etc.)
+        // iecName == "tebibyte"
         ```
 
 - **Format** bytes as a string with different unit and precision options
-	- 1,536 bytes to kilobytes, 1 digit after the decimal point → `1.5 KB`
+    - Automatic precision from culture, automatic byte-based unit
         ```cs
-        string formatted = new DataSize(1536).ToString(1, Unit.Kilobyte); // precision 1, change to specified unit
-        // formatted == "1.5 KB"
+        string formatted = new DataSize(1572864).ToString();
+        // formatted == "1.50 MB"
         ```
+    - Automatic precision, manual unit
         ```cs
-        string formatted = new DataSize(1536).ConvertToUnit(Unit.Kilobyte).ToString(1); // precision 1, don't change units
-        // formatted == "1.5 KB"
+         formatted = new DataSize(1572864).ToString(DataSizeUnit.Kilobyte);
+        // formatted == "1,536.00 kB"
         ```
+    - Manual precision, automatic unit
         ```cs
-        string formatted = new DataSize(1536).ToString("KB1"); // precision 1, change to specified unit
-        // formatted == "1.5 KB"
+        formatted = new DataSize(1572864).ToString(1);
+        // formatted == "1.5 MB"
         ```
+    - Automatic precision, automatic bit-based unit
         ```cs
-        string formatted = new DataSize(1536).ToString(1, true); // precision 1, normalize to automatic unit
-        // formatted == "1.5 KB"
+        formatted = new DataSize(1572864).ToString(true);
+        // formatted == "12.58 mb"
         ```
-        ```cs
-        string formatted = string.Format(new DataSizeFormatter(), "Size: {0:KB1}", 1536); // precision 1, change to specified unit
-        // formatted == "Size: 1.5 KB"
+
+- **Serialize and deserialize** to and from bits
+    - JSON ([System.Text.Json](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/overview) or [Newtonsoft.Json](https://www.newtonsoft.com/json/help))
+        ```json
+        { "filename": "example.txt", "size": 8192 }
         ```
-        ```cs
-        string formatted = string.Format(DataSizeFormatter.Instance, "Size: {0:A1}", 1536); // precision 1, normalize to automatic unit
-        // formatted == "Size: 1.5 KB"
+    - XML ([XmlSerializer](https://learn.microsoft.com/en-us/dotnet/standard/serialization/xml-and-soap-serialization))
+        ```xml
+        <?xml version="1.0" encoding="utf-8"?>
+        <MyFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            <Filename>example.txt</Filename>
+            <Size bits="8192" />
+        </MyFile>
         ```
-    - The format specifier (like `KB1` above) is made up of two optional parts, the destination unit (`KB`) and the precision (`1`).
-    - The destination unit (`KB`) is the data size unit to which you want the input bytes to be converted. You can also specify **`A`** to automatically normalize the unit of bytes and higher magnitudes, which is the default behavior if you omit the destination unit, and **`a`** normalizes to bits. Case matters for ambiguous units, like `kB`/`KB`/`K` for kilobytes and `kb`/`k`/`Kb` for kilobits. Unambiguous units like `kilobyte`/`kbyte`/`kibibyte`/`kib` can be provided in any case. 
-    - The precision (`1`) is the number of digits after the decimal place. If you omit this, it will use the default number value for the culture of the current thread, for example 2. Set this to `0` if you want integers only.

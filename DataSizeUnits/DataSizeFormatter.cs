@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+/*using System.Text.RegularExpressions;
 
 namespace DataSizeUnits;
 
@@ -30,7 +30,7 @@ namespace DataSizeUnits;
 /// string.format(new DataSizeFormatter(), "{0:KB0}", fileSize); // 1,440 KB
 /// </example>
 /// <seealso cref="DataSize.ToString(int,bool,IFormatProvider)" />
-/// <seealso cref="DataSize.ToString(int,Unit)" />
+/// <seealso cref="DataSize.ToString(int,DataSizeUnit)" />
 /// <seealso cref="DataSize.ToString(string,IFormatProvider)" />
 public class DataSizeFormatter: IFormatProvider, ICustomFormatter {
 
@@ -69,7 +69,7 @@ public class DataSizeFormatter: IFormatProvider, ICustomFormatter {
         } else if (_handleTypesBesidesDataSize) {
             try {
                 long bytes = Convert.ToInt64(arg);
-                dataSize = new DataSize(bytes, Unit.Byte);
+                dataSize = new DataSize(bytes, DataSizeUnit.Byte);
             } catch (Exception) {
                 return HandleOtherFormats(format, arg);
             }
@@ -112,4 +112,5 @@ public class DataSizeFormatter: IFormatProvider, ICustomFormatter {
         }
     }
 
-}
+}*/
+

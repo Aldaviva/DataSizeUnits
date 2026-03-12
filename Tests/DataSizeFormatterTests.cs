@@ -1,4 +1,4 @@
-using System.Globalization;
+/*using System.Globalization;
 
 namespace Tests;
 
@@ -102,7 +102,7 @@ public class DataSizeFormatterTests {
 
     [Fact]
     public void FormatUsingPrecisionAndUnit() {
-        string actual = new DataSize(1474560).ToString(2, Unit.Kilobyte);
+        string actual = new DataSize(1474560).ToString(2, DataSizeUnit.Kilobyte);
         Assert.Equal("1,440.00 KB", actual);
     }
 
@@ -153,7 +153,7 @@ public class DataSizeFormatterTests {
     // I can't fucking believe the C# compiler is stupid enough to allow this.
     [Fact]
     public void MadeUpEnumValue() {
-        const Unit madeUpEnumValue = (Unit) 9999;
+        const DataSizeUnit madeUpEnumValue = (DataSizeUnit) 9999;
         Assert.Throws<ArgumentOutOfRangeException>(() => new DataSize(1).ConvertToUnit(madeUpEnumValue));
         Assert.Throws<ArgumentOutOfRangeException>(() => madeUpEnumValue.ToAbbreviation());
         Assert.Throws<ArgumentOutOfRangeException>(() => madeUpEnumValue.ToName());
@@ -173,7 +173,7 @@ public class DataSizeFormatterTests {
 
     [Fact]
     public void DataSizeArg() {
-        string actual = string.Format(new DataSizeFormatter(), "{0:A1}", new DataSize(0, Unit.Kilobyte));
+        string actual = string.Format(new DataSizeFormatter(), "{0:A1}", new DataSize(0, DataSizeUnit.Kilobyte));
         Assert.Equal("0.0 B", actual);
     }
 
@@ -193,4 +193,5 @@ internal class Unstringable {
         throw new FormatException();
     }
 
-}
+}*/
+

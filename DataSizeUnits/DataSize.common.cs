@@ -20,6 +20,8 @@ public partial struct DataSize {
     private static readonly SearchValues<char> WhitespaceSearchValues = SearchValues.Create(Whitespace);
 #endif
 
+    #region Formatting
+
     /// <summary>
     /// <para>Format as a string. The quantity is normalized and formatted as a number using the current culture's numeric formatting information, such as thousands separators and precision. The byte-based auto-ranged unit's short abbreviation is appended after a space.</para>
     /// <para><c>new DataSize(1536).ToString()</c> → <c>1.50 kB</c></para>
@@ -87,6 +89,68 @@ public partial struct DataSize {
         return quantity.ToString(format ?? "N", formatProvider ?? CultureInfo.CurrentCulture) + ' ' + unit.ToAbbreviation();
     }
 
+    #endregion
+
+    #region Math operators
+
+    /// <summary>
+    /// Adds amounts of data together
+    /// </summary>
+    /// <param name="a">An amount of data</param>
+    /// <param name="b">Another amount of data</param>
+    /// <returns>The sum of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
+    public static DataSize operator +(DataSize a, DataSize b) => new(a.Bits + b.Bits);
+
+    /// <summary>
+    /// Subtracts amounts of data
+    /// </summary>
+    /// <param name="a">An amount of data</param>
+    /// <param name="b">Another amount of data</param>
+    /// <returns>The difference of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
+    public static DataSize operator -(DataSize a, DataSize b) => new(a.Bits - b.Bits);
+
+    /// <summary>
+    /// Multiplies amounts of data together
+    /// </summary>
+    /// <param name="a">An amount of data</param>
+    /// <param name="b">Another amount of data</param>
+    /// <returns>The product of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
+    public static DataSize operator *(DataSize a, BigInteger b) => new(a.Bits * b);
+
+    /// <summary>
+    /// Divides an amount of data
+    /// </summary>
+    /// <param name="a">An amount of data as the numerator</param>
+    /// <param name="b">Denominator</param>
+    /// <returns>The quotient of the data size <paramref name="a"/> divided by <paramref name="b"/>, in the units of <paramref name="a"/></returns>
+    /// <exception cref="DivideByZeroException">if <paramref name="b"/> is <c>0</c></exception>
+    public static DataSize operator /(DataSize a, BigInteger b) {
+        if (!b.Equals(BigInteger.Zero)) {
+            return new DataSize(a.Bits / b);
+        } else {
+            throw new DivideByZeroException($"Cannot divide {a} by zero");
+        }
+    }
+
+    /// <summary>
+    /// Divides an amount of data
+    /// </summary>
+    /// <param name="a">An amount of data as the numerator</param>
+    /// <param name="b">An amount of data as the denominator</param>
+    /// <returns>The quotient of the data size <paramref name="a"/> divided by <paramref name="b"/>, in the units of <paramref name="a"/></returns>
+    /// <exception cref="DivideByZeroException">if <paramref name="b"/> is <c>0</c></exception>
+    public static double operator /(DataSize a, DataSize b) {
+        if (!b.Bits.Equals(BigInteger.Zero)) {
+            return (double) a.Bits / (double) b.Bits;
+        } else {
+            throw new DivideByZeroException($"Cannot divide {a} by zero");
+        }
+    }
+
+    #endregion
+
+    #region Equality and comparisons
+
     /// <summary>
     /// Compare data size equality
     /// </summary>
@@ -153,60 +217,6 @@ public partial struct DataSize {
     public static bool operator >=(DataSize a, DataSize b) => a.Bits >= b.Bits;
 
     /// <summary>
-    /// Adds amounts of data together
-    /// </summary>
-    /// <param name="a">An amount of data</param>
-    /// <param name="b">Another amount of data</param>
-    /// <returns>The sum of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    public static DataSize operator +(DataSize a, DataSize b) => new(a.Bits + b.Bits);
-
-    /// <summary>
-    /// Subtracts amounts of data
-    /// </summary>
-    /// <param name="a">An amount of data</param>
-    /// <param name="b">Another amount of data</param>
-    /// <returns>The difference of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    public static DataSize operator -(DataSize a, DataSize b) => new(a.Bits - b.Bits);
-
-    /// <summary>
-    /// Multiplies amounts of data together
-    /// </summary>
-    /// <param name="a">An amount of data</param>
-    /// <param name="b">Another amount of data</param>
-    /// <returns>The product of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    public static DataSize operator *(DataSize a, BigInteger b) => new(a.Bits * b);
-
-    /// <summary>
-    /// Divides an amount of data
-    /// </summary>
-    /// <param name="a">An amount of data as the numerator</param>
-    /// <param name="b">Denominator</param>
-    /// <returns>The quotient of the data size <paramref name="a"/> divided by <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    /// <exception cref="DivideByZeroException">if <paramref name="b"/> is <c>0</c></exception>
-    public static DataSize operator /(DataSize a, BigInteger b) {
-        if (!b.Equals(BigInteger.Zero)) {
-            return new DataSize(a.Bits / b);
-        } else {
-            throw new DivideByZeroException($"Cannot divide {a} by zero");
-        }
-    }
-
-    /// <summary>
-    /// Divides an amount of data
-    /// </summary>
-    /// <param name="a">An amount of data as the numerator</param>
-    /// <param name="b">An amount of data as the denominator</param>
-    /// <returns>The quotient of the data size <paramref name="a"/> divided by <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    /// <exception cref="DivideByZeroException">if <paramref name="b"/> is <c>0</c></exception>
-    public static double operator /(DataSize a, DataSize b) {
-        if (!b.Bits.Equals(BigInteger.Zero)) {
-            return (double) a.Bits / (double) b.Bits;
-        } else {
-            throw new DivideByZeroException($"Cannot divide {a} by zero");
-        }
-    }
-
-    /// <summary>
     /// Byte equality check.
     /// </summary>
     /// <param name="dataSize">Data size.</param>
@@ -262,10 +272,44 @@ public partial struct DataSize {
     /// <returns><c>true</c> if <paramref name="bytes"/> and <paramref name="dataSize"/> represent the same number of bytes, or <c>false</c> otherwise.</returns>
     public static bool operator ==(long bytes, DataSize dataSize) => bytes == dataSize.Bytes;
 
+    /// <summary>
+    /// Byte inequality check.
+    /// </summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>false</c> if <paramref name="dataSize"/> and <paramref name="bytes"/> represent the same number of bytes, or <c>true</c> otherwise.</returns>
     public static bool operator !=(long bytes, DataSize dataSize) => bytes != dataSize.Bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bytes"/> represents fewer bytes than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator <(long bytes, DataSize dataSize) => bytes < dataSize.Bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bytes"/> represents more bytes than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator >(long bytes, DataSize dataSize) => bytes > dataSize.Bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bytes"/> represents the same or fewer bytes than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator <=(long bytes, DataSize dataSize) => bytes <= dataSize.Bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bytes"/> represents the same or more bytes than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator >=(long bytes, DataSize dataSize) => bytes >= dataSize.Bytes;
 
     /// <inheritdoc cref="op_Equality(DataSizeUnits.DataSize,long)" />
@@ -286,37 +330,123 @@ public partial struct DataSize {
     /// <inheritdoc cref="op_GreaterThanOrEqual(DataSizeUnits.DataSize,long)" />
     public static bool operator >=(DataSize dataSize, ulong bytes) => dataSize.Bytes >= bytes;
 
+    /// <inheritdoc cref="op_Equality(long,DataSizeUnits.DataSize)" />
     public static bool operator ==(ulong bytes, DataSize dataSize) => bytes == dataSize.Bytes;
+
+    /// <inheritdoc cref="op_Inequality(long,DataSizeUnits.DataSize)" />
     public static bool operator !=(ulong bytes, DataSize dataSize) => bytes != dataSize.Bytes;
+
+    /// <inheritdoc cref="op_LessThan(long,DataSizeUnits.DataSize)" />
     public static bool operator <(ulong bytes, DataSize dataSize) => bytes < dataSize.Bytes;
+
+    /// <inheritdoc cref="op_GreaterThan(long,DataSizeUnits.DataSize)" />
     public static bool operator >(ulong bytes, DataSize dataSize) => bytes > dataSize.Bytes;
+
+    /// <inheritdoc cref="op_LessThanOrEqual(long,DataSizeUnits.DataSize)" />
     public static bool operator <=(ulong bytes, DataSize dataSize) => bytes <= dataSize.Bytes;
+
+    /// <inheritdoc cref="op_GreaterThanOrEqual(long,DataSizeUnits.DataSize)" />
     public static bool operator >=(ulong bytes, DataSize dataSize) => bytes >= dataSize.Bytes;
 
-    /// <inheritdoc cref="op_Equality(DataSizeUnits.DataSize,long)" />
+    /// <summary>
+    /// Bit equality check.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bits">Number of bits.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> and <paramref name="bits"/> represent the same number of bits, or <c>false</c> otherwise.</returns>
     public static bool operator ==(DataSize dataSize, BigInteger bits) => dataSize.Bits == bits;
 
-    /// <inheritdoc cref="op_Inequality(DataSizeUnits.DataSize,long)" />
+    /// <summary>
+    /// Bit inequality check.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bits">Number of bits.</param>
+    /// <returns><c>false</c> if <paramref name="dataSize"/> and <paramref name="bits"/> represent the same number of bits, or <c>true</c> otherwise.</returns>
     public static bool operator !=(DataSize dataSize, BigInteger bits) => dataSize.Bits != bits;
 
-    /// <inheritdoc cref="op_LessThan(DataSizeUnits.DataSize,long)" />
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bits">Number of bits.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents fewer bits than <paramref name="bits"/>, or <c>false</c> otherwise.</returns>
     public static bool operator <(DataSize dataSize, BigInteger bits) => dataSize.Bits < bits;
 
-    /// <inheritdoc cref="op_GreaterThan(DataSizeUnits.DataSize,long)" />
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bits">Number of bits.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents more bits than <paramref name="bits"/>, or <c>false</c> otherwise.</returns>
     public static bool operator >(DataSize dataSize, BigInteger bits) => dataSize.Bits > bits;
 
-    /// <inheritdoc cref="op_LessThanOrEqual(DataSizeUnits.DataSize,long)" />
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bits">Number of bits.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents the same or fewer bits than <paramref name="bits"/>, or <c>false</c> otherwise.</returns>
     public static bool operator <=(DataSize dataSize, BigInteger bits) => dataSize.Bits <= bits;
 
-    /// <inheritdoc cref="op_GreaterThanOrEqual(DataSizeUnits.DataSize,long)" />
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bits">Number of bits.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents the same or more bits than <paramref name="bits"/>, or <c>false</c> otherwise.</returns>
     public static bool operator >=(DataSize dataSize, BigInteger bits) => dataSize.Bits >= bits;
 
+    /// <summary>
+    /// Bit equality check.
+    /// </summary>
+    /// <param name="bits">Number of bits.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bits"/> and <paramref name="dataSize"/> represent the same number of bits, or <c>false</c> otherwise.</returns>
     public static bool operator ==(BigInteger bits, DataSize dataSize) => bits == dataSize.Bits;
+
+    /// <summary>
+    /// Bit inequality check.
+    /// </summary>
+    /// <param name="bits">Number of bits.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>false</c> if <paramref name="dataSize"/> and <paramref name="bits"/> represent the same number of bits, or <c>true</c> otherwise.</returns>
     public static bool operator !=(BigInteger bits, DataSize dataSize) => bits != dataSize.Bits;
+
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="bits">Number of bits.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bits"/> represents fewer bits than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator <(BigInteger bits, DataSize dataSize) => bits < dataSize.Bits;
+
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="bits">Number of bits.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bits"/> represents more bits than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator >(BigInteger bits, DataSize dataSize) => bits > dataSize.Bits;
+
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="bits">Number of bits.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bits"/> represents the same or fewer bits than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator <=(BigInteger bits, DataSize dataSize) => bits <= dataSize.Bits;
+
+    /// <summary>
+    /// Bit comparison.
+    /// </summary>
+    /// <param name="bits">Number of bits.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bits"/> represents the same or more bits than <paramref name="dataSize"/>, or <c>false</c> otherwise.</returns>
     public static bool operator >=(BigInteger bits, DataSize dataSize) => bits >= dataSize.Bits;
+
+    #endregion
+
+    #region Casting
 
     /// <summary>
     /// Explicitly cast a <see cref="DataSize"/> instance to a <see cref="long"/> number of bytes.
@@ -387,6 +517,10 @@ public partial struct DataSize {
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
     public static explicit operator DataSize(sbyte bytes) => new(bytes);
+
+    #endregion
+
+    #region Parsing
 
     /// <summary>
     /// <para>Parses a <see cref="DataSize"/> from a string that consists of a numeric quantity and a unit.</para>
@@ -513,5 +647,7 @@ public partial struct DataSize {
     }
 
 #endif
+
+    #endregion
 
 }

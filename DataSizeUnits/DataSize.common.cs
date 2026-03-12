@@ -98,10 +98,10 @@ public partial struct DataSize {
     public readonly override bool Equals(object? other) => other is DataSize other2 && Equals(other2);
 
     /// <inheritdoc cref="Equals(DataSizeUnits.DataSize)" />
-    public static bool operator ==(DataSize self, DataSize other) => self.Equals(other);
+    public static bool operator ==(DataSize a, DataSize b) => a.Equals(b);
 
     /// <inheritdoc cref="Equals(DataSizeUnits.DataSize)" />
-    public static bool operator !=(DataSize self, DataSize other) => !self.Equals(other);
+    public static bool operator !=(DataSize a, DataSize b) => !a.Equals(b);
 
     /// <inheritdoc cref="Double.GetHashCode"/>
     public readonly override int GetHashCode() => Bits.GetHashCode();
@@ -205,6 +205,118 @@ public partial struct DataSize {
             throw new DivideByZeroException($"Cannot divide {a} by zero");
         }
     }
+
+    /// <summary>
+    /// Byte equality check.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> and <paramref name="bytes"/> represent the same number of bytes, or <c>false</c> otherwise.</returns>
+    public static bool operator ==(DataSize dataSize, long bytes) => dataSize.Bytes == bytes;
+
+    /// <summary>
+    /// Byte inequality check.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns><c>false</c> if <paramref name="dataSize"/> and <paramref name="bytes"/> represent the same number of bytes, or <c>true</c> otherwise.</returns>
+    public static bool operator !=(DataSize dataSize, long bytes) => dataSize.Bytes != bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents fewer bytes than <paramref name="bytes"/>, or <c>false</c> otherwise.</returns>
+    public static bool operator <(DataSize dataSize, long bytes) => dataSize.Bytes < bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents more bytes than <paramref name="bytes"/>, or <c>false</c> otherwise.</returns>
+    public static bool operator >(DataSize dataSize, long bytes) => dataSize.Bytes > bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents the same or fewer bytes than <paramref name="bytes"/>, or <c>false</c> otherwise.</returns>
+    public static bool operator <=(DataSize dataSize, long bytes) => dataSize.Bytes <= bytes;
+
+    /// <summary>
+    /// Byte comparison.
+    /// </summary>
+    /// <param name="dataSize">Data size.</param>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <returns><c>true</c> if <paramref name="dataSize"/> represents the same or more bytes than <paramref name="bytes"/>, or <c>false</c> otherwise.</returns>
+    public static bool operator >=(DataSize dataSize, long bytes) => dataSize.Bytes >= bytes;
+
+    /// <summary>
+    /// Byte equality check.
+    /// </summary>
+    /// <param name="bytes">Number of bytes.</param>
+    /// <param name="dataSize">Data size.</param>
+    /// <returns><c>true</c> if <paramref name="bytes"/> and <paramref name="dataSize"/> represent the same number of bytes, or <c>false</c> otherwise.</returns>
+    public static bool operator ==(long bytes, DataSize dataSize) => bytes == dataSize.Bytes;
+
+    public static bool operator !=(long bytes, DataSize dataSize) => bytes != dataSize.Bytes;
+    public static bool operator <(long bytes, DataSize dataSize) => bytes < dataSize.Bytes;
+    public static bool operator >(long bytes, DataSize dataSize) => bytes > dataSize.Bytes;
+    public static bool operator <=(long bytes, DataSize dataSize) => bytes <= dataSize.Bytes;
+    public static bool operator >=(long bytes, DataSize dataSize) => bytes >= dataSize.Bytes;
+
+    /// <inheritdoc cref="op_Equality(DataSizeUnits.DataSize,long)" />
+    public static bool operator ==(DataSize dataSize, ulong bytes) => dataSize.Bytes == bytes;
+
+    /// <inheritdoc cref="op_Inequality(DataSizeUnits.DataSize,long)" />
+    public static bool operator !=(DataSize dataSize, ulong bytes) => dataSize.Bytes != bytes;
+
+    /// <inheritdoc cref="op_LessThan(DataSizeUnits.DataSize,long)" />
+    public static bool operator <(DataSize dataSize, ulong bytes) => dataSize.Bytes < bytes;
+
+    /// <inheritdoc cref="op_GreaterThan(DataSizeUnits.DataSize,long)" />
+    public static bool operator >(DataSize dataSize, ulong bytes) => dataSize.Bytes > bytes;
+
+    /// <inheritdoc cref="op_LessThanOrEqual(DataSizeUnits.DataSize,long)" />
+    public static bool operator <=(DataSize dataSize, ulong bytes) => dataSize.Bytes <= bytes;
+
+    /// <inheritdoc cref="op_GreaterThanOrEqual(DataSizeUnits.DataSize,long)" />
+    public static bool operator >=(DataSize dataSize, ulong bytes) => dataSize.Bytes >= bytes;
+
+    public static bool operator ==(ulong bytes, DataSize dataSize) => bytes == dataSize.Bytes;
+    public static bool operator !=(ulong bytes, DataSize dataSize) => bytes != dataSize.Bytes;
+    public static bool operator <(ulong bytes, DataSize dataSize) => bytes < dataSize.Bytes;
+    public static bool operator >(ulong bytes, DataSize dataSize) => bytes > dataSize.Bytes;
+    public static bool operator <=(ulong bytes, DataSize dataSize) => bytes <= dataSize.Bytes;
+    public static bool operator >=(ulong bytes, DataSize dataSize) => bytes >= dataSize.Bytes;
+
+    /// <inheritdoc cref="op_Equality(DataSizeUnits.DataSize,long)" />
+    public static bool operator ==(DataSize dataSize, BigInteger bits) => dataSize.Bits == bits;
+
+    /// <inheritdoc cref="op_Inequality(DataSizeUnits.DataSize,long)" />
+    public static bool operator !=(DataSize dataSize, BigInteger bits) => dataSize.Bits != bits;
+
+    /// <inheritdoc cref="op_LessThan(DataSizeUnits.DataSize,long)" />
+    public static bool operator <(DataSize dataSize, BigInteger bits) => dataSize.Bits < bits;
+
+    /// <inheritdoc cref="op_GreaterThan(DataSizeUnits.DataSize,long)" />
+    public static bool operator >(DataSize dataSize, BigInteger bits) => dataSize.Bits > bits;
+
+    /// <inheritdoc cref="op_LessThanOrEqual(DataSizeUnits.DataSize,long)" />
+    public static bool operator <=(DataSize dataSize, BigInteger bits) => dataSize.Bits <= bits;
+
+    /// <inheritdoc cref="op_GreaterThanOrEqual(DataSizeUnits.DataSize,long)" />
+    public static bool operator >=(DataSize dataSize, BigInteger bits) => dataSize.Bits >= bits;
+
+    public static bool operator ==(BigInteger bits, DataSize dataSize) => bits == dataSize.Bits;
+    public static bool operator !=(BigInteger bits, DataSize dataSize) => bits != dataSize.Bits;
+    public static bool operator <(BigInteger bits, DataSize dataSize) => bits < dataSize.Bits;
+    public static bool operator >(BigInteger bits, DataSize dataSize) => bits > dataSize.Bits;
+    public static bool operator <=(BigInteger bits, DataSize dataSize) => bits <= dataSize.Bits;
+    public static bool operator >=(BigInteger bits, DataSize dataSize) => bits >= dataSize.Bits;
 
     /// <summary>
     /// Explicitly cast a <see cref="DataSize"/> instance to a <see cref="long"/> number of bytes.
@@ -358,9 +470,9 @@ public partial struct DataSize {
     public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? formatProvider, out DataSize result) {
         result = new DataSize(0);
         int                whitespaceStart = s.IndexOfAny(WhitespaceSearchValues);
-        ReadOnlySpan<char> left            = (whitespaceStart == -1 ? s : s[..whitespaceStart]).Trim();
+        ReadOnlySpan<char> left = (whitespaceStart == -1 ? s : s[..whitespaceStart]).Trim();
 
-        BigInteger? integerBits  = null;
+        BigInteger? integerBits = null;
         double      floatingBits = 0;
         if (left.Contains('.')) {
             if (!double.TryParse(left, formatProvider, out floatingBits)) return false;
@@ -383,9 +495,9 @@ public partial struct DataSize {
         if (s is null) return false;
 
         int    whitespaceStart = s.IndexOfAny(Whitespace);
-        string left = (whitespaceStart == -1 ? s : s.Substring(0, whitespaceStart)).Trim();
+        string left            = (whitespaceStart == -1 ? s : s.Substring(0, whitespaceStart)).Trim();
 
-        BigInteger? integerBits = null;
+        BigInteger? integerBits  = null;
         double      floatingBits = 0;
         if (left.Contains('.')) {
             if (!double.TryParse(left, NumberStyles.Float | NumberStyles.AllowThousands, formatProvider, out floatingBits)) return false;

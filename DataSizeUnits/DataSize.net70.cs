@@ -6,51 +6,21 @@ namespace DataSizeUnits;
 
 public partial struct DataSize {
 
-    /// <exception cref="DivideByZeroException"><paramref name="b"/> is <see cref="Zero"/></exception>
-    static DataSize IDivisionOperators<DataSize, DataSize, DataSize>.operator /(DataSize a, DataSize b) {
-        if (!b.Bits.Equals(BigInteger.Zero)) {
-            return new DataSize(a.Bits / b.Bits);
+    /// <exception cref="DivideByZeroException"><paramref name="denominator"/> is <see cref="Zero"/></exception>
+    static DataSize IDivisionOperators<DataSize, DataSize, DataSize>.operator /(DataSize numerator, DataSize denominator) {
+        if (!denominator.Bits.Equals(BigInteger.Zero)) {
+            return new DataSize(numerator.Bits / denominator.Bits);
         } else {
-            throw new DivideByZeroException($"Cannot divide {a} by zero");
+            throw new DivideByZeroException($"Cannot divide {numerator} by zero");
         }
     }
 
     static DataSize INumberBase<DataSize>.One => new(BigInteger.One);
     static int INumberBase<DataSize>.Radix => 2;
 
-    /// <inheritdoc />
-    public static DataSize Zero => new(BigInteger.Zero);
-
     static DataSize ISignedNumber<DataSize>.NegativeOne => new(BigInteger.MinusOne);
     static DataSize IAdditiveIdentity<DataSize, DataSize>.AdditiveIdentity => Zero;
     static DataSize IMultiplicativeIdentity<DataSize, DataSize>.MultiplicativeIdentity => new(BigInteger.One);
-
-    /// <inheritdoc />
-    public static DataSize operator --(DataSize value) {
-        BigInteger bits = value.Bits;
-        return new DataSize(--bits);
-    }
-
-    /// <inheritdoc />
-    public static DataSize operator ++(DataSize value) {
-        BigInteger bits = value.Bits;
-        return new DataSize(++bits);
-    }
-
-    /// <inheritdoc />
-    public static DataSize operator %(DataSize left, DataSize right) => new(left.Bits % right.Bits);
-
-    /// <inheritdoc />
-    public static DataSize operator *(DataSize left, DataSize right) => new(left.Bits * right.Bits);
-
-    /// <inheritdoc />
-    public static DataSize operator -(DataSize value) => new(-value.Bits);
-
-    /// <inheritdoc />
-    public static DataSize operator +(DataSize value) => new(+value.Bits);
-
-    /// <inheritdoc />
-    public static DataSize Abs(DataSize value) => new(BigInteger.Abs(value.Bits));
 
     static bool INumberBase<DataSize>.IsCanonical(DataSize value) => true;
 

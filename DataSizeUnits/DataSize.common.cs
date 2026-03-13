@@ -8,6 +8,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Buffers;
 #endif
 
+#if !NET7_0_OR_GREATER
+// ReSharper disable InheritdocInvalidUsage - docs come from types introduced in .NET 7
+#endif
+
 #pragma warning disable CS1573 // Broken heuristic, not aware of inheritdoc
 
 namespace DataSizeUnits;
@@ -19,6 +23,13 @@ public partial struct DataSize {
 #if NET8_0_OR_GREATER
     private static readonly SearchValues<char> WhitespaceSearchValues = SearchValues.Create(Whitespace);
 #endif
+
+    #region Constants
+
+    /// <inheritdoc />
+    public static DataSize Zero => new(BigInteger.Zero);
+
+    #endregion
 
     #region Formatting
 
@@ -98,54 +109,160 @@ public partial struct DataSize {
     /// </summary>
     /// <param name="a">An amount of data</param>
     /// <param name="b">Another amount of data</param>
-    /// <returns>The sum of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
+    /// <returns>The sum of the data sizes of <paramref name="a"/> and <paramref name="b"/></returns>
     public static DataSize operator +(DataSize a, DataSize b) => new(a.Bits + b.Bits);
+
+    /// <summary>
+    /// Adds amounts of data together
+    /// </summary>
+    /// <param name="dataSize">An amount of data</param>
+    /// <param name="bytes">Number of bytes</param>
+    /// <returns>The sum of the data sizes of <paramref name="dataSize"/> and <paramref name="bytes"/></returns>
+    public static DataSize operator +(DataSize dataSize, BigInteger bytes) => new(dataSize.Bits + (bytes << 3));
+
+    /// <inheritdoc cref="op_Addition(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator +(DataSize dataSize, ulong bytes) => dataSize + ((BigInteger) bytes << 3);
+
+    /// <inheritdoc cref="op_Addition(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator +(DataSize dataSize, long bytes) => dataSize + ((BigInteger) bytes << 3);
+
+    /// <inheritdoc cref="op_Addition(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator +(BigInteger bytes, DataSize dataSize) => new(dataSize.Bits + (bytes << 3));
+
+    /// <inheritdoc cref="op_Addition(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator +(ulong bytes, DataSize dataSize) => dataSize + ((BigInteger) bytes << 3);
+
+    /// <inheritdoc cref="op_Addition(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator +(long bytes, DataSize dataSize) => dataSize + ((BigInteger) bytes << 3);
 
     /// <summary>
     /// Subtracts amounts of data
     /// </summary>
     /// <param name="a">An amount of data</param>
     /// <param name="b">Another amount of data</param>
-    /// <returns>The difference of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
+    /// <returns>The difference of the data sizes of <paramref name="a"/> and <paramref name="b"/></returns>
     public static DataSize operator -(DataSize a, DataSize b) => new(a.Bits - b.Bits);
+
+    /// <summary>
+    /// Subtracts amounts of data
+    /// </summary>
+    /// <param name="dataSize">An amount of data</param>
+    /// <param name="bytes">Number of bytes</param>
+    /// <returns>The difference of the data sizes of <paramref name="dataSize"/> and <paramref name="bytes"/></returns>
+    public static DataSize operator -(DataSize dataSize, BigInteger bytes) => new(dataSize.Bits - (bytes << 3));
+
+    /// <inheritdoc cref="op_Subtraction(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator -(DataSize dataSize, ulong bytes) => dataSize - ((BigInteger) bytes << 3);
+
+    /// <inheritdoc cref="op_Subtraction(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator -(DataSize dataSize, long bytes) => dataSize - ((BigInteger) bytes << 3);
+
+    /// <summary>
+    /// Subtracts amounts of data
+    /// </summary>
+    /// <param name="bytes">Number of bytes</param>
+    /// <param name="dataSize">An amount of data</param>
+    /// <returns>The difference of the data sizes of <paramref name="bytes"/> and <paramref name="dataSize"/></returns>
+    public static DataSize operator -(BigInteger bytes, DataSize dataSize) => new(dataSize.Bits - (bytes << 3));
 
     /// <summary>
     /// Multiplies amounts of data together
     /// </summary>
-    /// <param name="a">An amount of data</param>
-    /// <param name="b">Another amount of data</param>
-    /// <returns>The product of the data sizes of <paramref name="a"/> and <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    public static DataSize operator *(DataSize a, BigInteger b) => new(a.Bits * b);
+    /// <param name="dataSize">An amount of data</param>
+    /// <param name="coefficient">Another amount of data</param>
+    /// <returns>The product of the data sizes of <paramref name="dataSize"/> and <paramref name="coefficient"/></returns>
+    public static DataSize operator *(DataSize dataSize, BigInteger coefficient) => new(dataSize.Bits * coefficient);
+
+    /// <inheritdoc cref="op_Multiply(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator *(DataSize dataSize, long coefficient) => new(dataSize.Bits * coefficient);
+
+    /// <inheritdoc cref="op_Multiply(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator *(DataSize dataSize, ulong coefficient) => new(dataSize.Bits * coefficient);
+
+    /// <inheritdoc cref="op_Multiply(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator *(BigInteger coefficient, DataSize dataSize) => new(dataSize.Bits * coefficient);
+
+    /// <inheritdoc cref="op_Multiply(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator *(ulong coefficient, DataSize dataSize) => new(dataSize.Bits * coefficient);
+
+    /// <inheritdoc cref="op_Multiply(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator *(long coefficient, DataSize dataSize) => new(dataSize.Bits * coefficient);
 
     /// <summary>
     /// Divides an amount of data
     /// </summary>
-    /// <param name="a">An amount of data as the numerator</param>
-    /// <param name="b">Denominator</param>
-    /// <returns>The quotient of the data size <paramref name="a"/> divided by <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    /// <exception cref="DivideByZeroException">if <paramref name="b"/> is <c>0</c></exception>
-    public static DataSize operator /(DataSize a, BigInteger b) {
-        if (!b.Equals(BigInteger.Zero)) {
-            return new DataSize(a.Bits / b);
+    /// <param name="numerator">An amount of data as the numerator</param>
+    /// <param name="denominator">Denominator</param>
+    /// <returns>The quotient of the data size <paramref name="numerator"/> divided by <paramref name="denominator"/></returns>
+    /// <exception cref="DivideByZeroException">if <paramref name="denominator"/> is <c>0</c></exception>
+    public static DataSize operator /(DataSize numerator, BigInteger denominator) {
+        if (!denominator.Equals(BigInteger.Zero)) {
+            return new DataSize(numerator.Bits / denominator);
         } else {
-            throw new DivideByZeroException($"Cannot divide {a} by zero");
+            throw new DivideByZeroException($"Cannot divide {numerator} by zero");
         }
     }
 
     /// <summary>
     /// Divides an amount of data
     /// </summary>
-    /// <param name="a">An amount of data as the numerator</param>
-    /// <param name="b">An amount of data as the denominator</param>
-    /// <returns>The quotient of the data size <paramref name="a"/> divided by <paramref name="b"/>, in the units of <paramref name="a"/></returns>
-    /// <exception cref="DivideByZeroException">if <paramref name="b"/> is <c>0</c></exception>
-    public static double operator /(DataSize a, DataSize b) {
-        if (!b.Bits.Equals(BigInteger.Zero)) {
-            return (double) a.Bits / (double) b.Bits;
+    /// <param name="numerator">An amount of data as the numerator</param>
+    /// <param name="denominator">An amount of data as the denominator</param>
+    /// <returns>The quotient of the data size <paramref name="numerator"/> divided by <paramref name="denominator"/></returns>
+    /// <exception cref="DivideByZeroException">if <paramref name="denominator"/> is <c>0</c></exception>
+    public static double operator /(DataSize numerator, DataSize denominator) {
+        if (!denominator.Bits.Equals(BigInteger.Zero)) {
+            return (double) numerator.Bits / (double) denominator.Bits;
         } else {
-            throw new DivideByZeroException($"Cannot divide {a} by zero");
+            throw new DivideByZeroException($"Cannot divide {numerator} by zero");
         }
     }
+
+    /// <inheritdoc cref="op_Division(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator /(DataSize numerator, ulong denominator) => numerator / ((BigInteger) denominator << 3);
+
+    /// <inheritdoc cref="op_Division(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator /(DataSize numerator, long denominator) => numerator / ((BigInteger) denominator << 3);
+
+    /// <inheritdoc cref="op_Division(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
+    public static DataSize operator /(DataSize numerator, double denominator) {
+        if (denominator == 0) {
+            throw new DivideByZeroException($"Cannot divide {numerator} by zero");
+        } else if (numerator.Bits >= ulong.MinValue && numerator.Bits <= ulong.MaxValue) {
+            return new DataSize((BigInteger) Math.Round((ulong) numerator.Bits / denominator));
+        } else if (numerator.Bits >= long.MinValue && numerator.Bits <= long.MaxValue) {
+            return new DataSize((BigInteger) Math.Round((long) numerator.Bits / denominator));
+        } else {
+            return new DataSize((BigInteger) Math.Round((double) numerator.Bits / denominator));
+        }
+    }
+
+    /// <inheritdoc />
+    public static DataSize operator --(DataSize value) {
+        BigInteger bits = value.Bits;
+        return new DataSize(--bits);
+    }
+
+    /// <inheritdoc />
+    public static DataSize operator ++(DataSize value) {
+        BigInteger bits = value.Bits;
+        return new DataSize(++bits);
+    }
+
+    /// <inheritdoc />
+    public static DataSize operator %(DataSize left, DataSize right) => new(left.Bits % right.Bits);
+
+    /// <inheritdoc />
+    public static DataSize operator *(DataSize left, DataSize right) => new(left.Bits * right.Bits);
+
+    /// <inheritdoc />
+    public static DataSize operator -(DataSize value) => new(-value.Bits);
+
+    /// <inheritdoc />
+    public static DataSize operator +(DataSize value) => new(+value.Bits);
+
+    /// <inheritdoc />
+    public static DataSize Abs(DataSize value) => new(BigInteger.Abs(value.Bits));
 
     #endregion
 
@@ -467,56 +584,56 @@ public partial struct DataSize {
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(long bytes) => new(bytes);
+    public static implicit operator DataSize(long bytes) => new(bytes);
 
     /// <summary>
     /// Explicitly cast an <see cref="int"/> to a <see cref="DataSize"/> that represents the original value's number of bytes.
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(int bytes) => new(bytes);
+    public static implicit operator DataSize(int bytes) => new(bytes);
 
     /// <summary>
     /// Explicitly cast a <see cref="uint"/> to a <see cref="DataSize"/> that represents the original value's number of bytes.
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(uint bytes) => new(bytes);
+    public static implicit operator DataSize(uint bytes) => new(bytes);
 
     /// <summary>
     /// Explicitly cast a <see cref="ulong"/> to a <see cref="DataSize"/> that represents the original value's number of bytes.
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(ulong bytes) => new(bytes);
+    public static implicit operator DataSize(ulong bytes) => new(bytes);
 
     /// <summary>
     /// Explicitly cast a <see cref="short"/> to a <see cref="DataSize"/> that represents the original value's number of bytes.
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(short bytes) => new(bytes);
+    public static implicit operator DataSize(short bytes) => new(bytes);
 
     /// <summary>
     /// Explicitly cast a <see cref="ushort"/> to a <see cref="DataSize"/> that represents the original value's number of bytes.
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(ushort bytes) => new(bytes);
+    public static implicit operator DataSize(ushort bytes) => new(bytes);
 
     /// <summary>
     /// Explicitly cast a <see cref="byte"/> to a <see cref="DataSize"/> that represents the original value's number of bytes.
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(byte bytes) => new(bytes);
+    public static implicit operator DataSize(byte bytes) => new(bytes);
 
     /// <summary>
     /// Explicitly cast a <see cref="byte"/> to a <see cref="DataSize"/> that represents the original value's number of bytes.
     /// </summary>
     /// <param name="bytes">Number of bytes to be represented.</param>
     /// <returns>A <see cref="DataSize"/> value that represents <paramref name="bytes"/> number of bytes.</returns>
-    public static explicit operator DataSize(sbyte bytes) => new(bytes);
+    public static implicit operator DataSize(sbyte bytes) => new(bytes);
 
     #endregion
 

@@ -26,7 +26,7 @@ public class UnitTests {
     [Fact]
     public void JedecAbbreviations() {
         Assert.Equal("B", DataSizeUnit.Byte.ToAbbreviation());
-        Assert.Equal("KB", DataSizeUnit.Kilobyte.ToAbbreviation());
+        Assert.Equal("kB", DataSizeUnit.Kilobyte.ToAbbreviation());
         Assert.Equal("MB", DataSizeUnit.Megabyte.ToAbbreviation());
         Assert.Equal("GB", DataSizeUnit.Gigabyte.ToAbbreviation());
         Assert.Equal("TB", DataSizeUnit.Terabyte.ToAbbreviation());

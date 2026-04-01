@@ -1,7 +1,9 @@
-using System.ComponentModel;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
 
 namespace DataSizeUnits;
@@ -15,29 +17,26 @@ namespace DataSizeUnits;
 [Serializable]
 [JsonConverter(typeof(DataSizeJsonConverter))]
 [Newtonsoft.Json.JsonConverter(typeof(DataSizeNewtonsoftJsonConverter))]
-[XmlType]
-public partial struct DataSize:
+public readonly partial struct DataSize: IXmlSerializable
 #if NET7_0_OR_GREATER
-    INumber<DataSize>, ISignedNumber<DataSize>
+    , INumber<DataSize>, ISignedNumber<DataSize>
 #else
-    IComparable<DataSize>, IEquatable<DataSize>, IFormattable
+    , IComparable<DataSize>, IEquatable<DataSize>, IFormattable
 #endif
 {
-
-    private int _readOnly = 1;
 
     /// <summary>
     /// The total number of bits represented by this value.
     /// </summary>
     [XmlIgnore]
-    public BigInteger Bits { get; private set; }
+    public BigInteger Bits { get; }
 
     /// <summary>
     /// <para>The total number of bytes represented by this value.</para>
     /// <para>If there is a partial byte because <see cref="Bits"/> is not an integer multiple of 8, this is rounded toward zero to the closest integer byte.</para>
     /// </summary>
     [JsonIgnore] [Newtonsoft.Json.JsonIgnore] [XmlIgnore]
-    public readonly BigInteger Bytes => Bits >> 3;
+    public BigInteger Bytes => Bits >> 3;
 
     /// <summary>
     /// Create a new value that represents the given quantity of bits.
@@ -47,20 +46,27 @@ public partial struct DataSize:
         Bits = bits;
     }
 
+    /*
+     * ❌ DANGER ❌
+     * Adding a no-arg constructor will cause XmlSerializer to generate invalid bytecode.
+     * To allow users and JSON deserializers to instantiate this struct with no arguments, give a constructor with arity > 0 a default argument value instead.
+     * https://github.com/dotnet/runtime/issues/99613
+     */
+    /*
     /// <summary>
     /// Create a new value that represents 0 bytes.
     /// </summary>
     public DataSize() {
-        Bits      = BigInteger.Zero;
-        _readOnly = 0;
+        Bits = BigInteger.Zero;
     }
+    */
 
     /// <summary>
     /// <para>Create a new value that represents the given quantity of bytes.</para>
     /// <code>var fileSize = new DataSize(new FileInfo(fileName).Length);</code>
     /// </summary>
-    /// <param name="bytes">How many bytes to represent.</param>
-    public DataSize(long bytes): this((BigInteger) bytes << 3) {}
+    /// <param name="bytes">How many bytes to represent, or 0 if omitted.</param>
+    public DataSize(long bytes = 0): this((BigInteger) bytes << 3) {}
 
     /// <inheritdoc cref="DataSize(long)" />
     public DataSize(ulong bytes): this((BigInteger) bytes << 3) {}
@@ -92,20 +98,20 @@ public partial struct DataSize:
         return numerator * coefficient / denominator;
     }
 
-    /// <summary>
-    /// ⛔ Not to be called directly. Only for the use of <see cref="XmlSerializer"/>.
-    /// </summary>
-    /// <exception cref="InvalidOperationException" accessor="set">Mutating an existing value.</exception>
-    [JsonIgnore] [Newtonsoft.Json.JsonIgnore]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    [XmlAttribute("bits", DataType = "integer")]
-    public string XmlBits {
-        readonly get => Bits.ToString("R", CultureInfo.InvariantCulture);
-        set {
-            if (Interlocked.Exchange(ref _readOnly, 1) == 1) throw new InvalidOperationException($"Illegal attempt to mutate an immutable {nameof(DataSize)} value.");
-            Bits = BigInteger.Parse(value, CultureInfo.InvariantCulture);
-        }
+    /*
+     * https://www.reflectionit.nl/blog/2022/implement-ixmlserializable-in-a-readonly-struct
+     */
+    void IXmlSerializable.ReadXml(XmlReader reader) {
+        BigInteger bits = reader.MoveToAttribute("bits") ? BigInteger.Parse(reader.Value, NumberStyles.Integer, CultureInfo.InvariantCulture) : BigInteger.Zero;
+        reader.Skip();
+        Unsafe.AsRef(in this) = new DataSize(bits);
     }
+
+    void IXmlSerializable.WriteXml(XmlWriter writer) {
+        writer.WriteAttributeString("bits", Bits.ToString(CultureInfo.InvariantCulture));
+    }
+
+    XmlSchema? IXmlSerializable.GetSchema() => null;
 
     /// <summary>
     /// <para>Convert this value to the given <paramref name="unit"/>.</para>
@@ -115,7 +121,7 @@ public partial struct DataSize:
     /// </summary>
     /// <param name="unit">The unit of data to which you want to convert this value's number of bits.</param>
     /// <returns>The converted quantity in the <paramref name="unit"/> specified.</returns>
-    public readonly double AsUnit(DataSizeUnit unit) => unit switch {
+    public double AsUnit(DataSizeUnit unit) => unit switch {
         DataSizeUnit.Bit  => (double) Bits,
         DataSizeUnit.Byte => (double) Bytes,
         _                 => (double) Bits / (double) unit.AsBits
@@ -129,7 +135,7 @@ public partial struct DataSize:
     /// </summary>
     /// <param name="unit">The unit of data to which you want to convert this value's number of bits.</param>
     /// <returns>The converted quantity in the <paramref name="unit"/> specified.</returns>
-    public readonly BigInteger AsUnitExact(DataSizeUnit unit) => unit switch {
+    public BigInteger AsUnitExact(DataSizeUnit unit) => unit switch {
         DataSizeUnit.Bit  => Bits,
         DataSizeUnit.Byte => Bytes,
         _                 => Bits / unit.AsBits
@@ -145,7 +151,7 @@ public partial struct DataSize:
     /// </summary>
     /// <param name="useBitsInsteadOfBytes"><c>true</c> to choose a unit based on bits, or <c>false</c> to choose a unit based on bytes</param>
     /// <returns></returns>
-    public readonly (double quantity, DataSizeUnit unit) AsAutomaticUnit(bool useBitsInsteadOfBytes = false) {
+    public (double quantity, DataSizeUnit unit) AsAutomaticUnit(bool useBitsInsteadOfBytes = false) {
         if (Bits.Equals(BigInteger.Zero)) {
             return (0, useBitsInsteadOfBytes ? DataSizeUnit.Bit : DataSizeUnit.Byte);
         }

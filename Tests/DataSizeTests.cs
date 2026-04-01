@@ -11,7 +11,7 @@ public class DataSizeTests {
     }
 
     public static TheoryData<long, double, DataSizeUnit, bool> NormalizeData => new() {
-        /*{ 0, 0.0, DataSizeUnit.Byte, true },
+        { 0, 0.0, DataSizeUnit.Byte, true },
         { 1, 1, DataSizeUnit.Byte, true },
         { 1023, 1023.0, DataSizeUnit.Byte, true },
         { 1024, 1.0, DataSizeUnit.Kilobyte, true },
@@ -30,10 +30,9 @@ public class DataSizeTests {
         { 1024 * 1024 * 1024, 8.589934592, DataSizeUnit.Gigabit, false },
         { 1024L * 1024 * 1024 * 1024, 8.796093022208, DataSizeUnit.Terabit, false },
         { 1024L * 1024 * 1024 * 1024 * 1024, 9.007199254740992, DataSizeUnit.Petabit, false },
-        { 1024L * 1024 * 1024 * 1024 * 1024 * 1024, 9.22337203685478, DataSizeUnit.Exabit, false },*/
+        { 1024L * 1024 * 1024 * 1024 * 1024 * 1024, 9.22337203685478, DataSizeUnit.Exabit, false },
         { 125_000_000_000_000_000, 1, DataSizeUnit.Exabit, false },
-        // { 124_999_999_999_999_999, 999.999, DataSizeUnit.Petabit, false }
-        /*{ 124_999_937_499_999_991, 999.999, DataSizeUnit.Petabit, false },*/
+        { 124_999_937_499_999_991, 999.999, DataSizeUnit.Petabit, false },
     };
 
     [Theory] [MemberData(nameof(ScaleToData))]
@@ -157,7 +156,7 @@ public class DataSizeTests {
 
     [Fact]
     public void FromBytes() {
-        DataSize actual = (DataSize) 1024;
+        DataSize actual = 1024;
         Assert.Equal(1024, actual.Bytes);
     }
 

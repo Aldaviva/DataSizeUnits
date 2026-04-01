@@ -16,7 +16,7 @@ using System.Buffers;
 
 namespace DataSizeUnits;
 
-public partial struct DataSize {
+public readonly partial struct DataSize {
 
     private static readonly char[] Whitespace = ['\t', '\n', '\v', '\f', '\r', '\x20'];
 
@@ -38,7 +38,7 @@ public partial struct DataSize {
     /// <para><c>new DataSize(1536).ToString()</c> → <c>1.50 kB</c></para>
     /// </summary>
     /// <returns>String with the formatted data quantity and unit abbreviation, separated by a space.</returns>
-    public readonly override string ToString() => ToString();
+    public override string ToString() => ToString();
 
     /// <summary>
     /// <para>Format as a string. The quantity is normalized and formatted as a number. The auto-ranged unit's short abbreviation is appended after a space.</para>
@@ -47,7 +47,7 @@ public partial struct DataSize {
     /// <param name="useBitsInsteadOfBytes"><c>true</c> to range the value to a unit based on bits, or <c>false</c> to use a unit based on bytes.</param>
     /// <param name="formatProvider">Localization settings, such as number precision and thousands separators.</param>
     /// <returns>String with the formatted data quantity and unit abbreviation, separated by a space.</returns>
-    public readonly string ToString(bool useBitsInsteadOfBytes = false, IFormatProvider? formatProvider = null) {
+    public string ToString(bool useBitsInsteadOfBytes = false, IFormatProvider? formatProvider = null) {
         (double quantity, DataSizeUnit unit) = AsAutomaticUnit(useBitsInsteadOfBytes);
         return string.Format(formatProvider, "{0:N} {1}", quantity, unit.ToAbbreviation());
     }
@@ -60,7 +60,7 @@ public partial struct DataSize {
     /// <param name="useBitsInsteadOfBytes"><c>true</c> to range the value to a unit based on bits, or <c>false</c> to use a unit based on bytes.</param>
     /// <param name="formatProvider">Localization settings, such as thousands separators.</param>
     /// <returns>String with the formatted data quantity and unit abbreviation, separated by a space.</returns>
-    public readonly string ToString(int precision, bool useBitsInsteadOfBytes = false, IFormatProvider? formatProvider = null) =>
+    public string ToString(int precision, bool useBitsInsteadOfBytes = false, IFormatProvider? formatProvider = null) =>
         ToString(useBitsInsteadOfBytes, WithPrecision(precision, formatProvider));
 
     /// <summary>
@@ -71,7 +71,7 @@ public partial struct DataSize {
     /// <param name="unit">The unit to which this value should be converted for rendering.</param>
     /// <param name="formatProvider">Localization settings, such as thousands separators.</param>
     /// <returns>String with the formatted data quantity and unit abbreviation, separated by a space.</returns>
-    public readonly string ToString(int precision, DataSizeUnit unit, IFormatProvider? formatProvider = null) =>
+    public string ToString(int precision, DataSizeUnit unit, IFormatProvider? formatProvider = null) =>
         ToString(unit, WithPrecision(precision, formatProvider));
 
     /// <summary>
@@ -81,7 +81,7 @@ public partial struct DataSize {
     /// <param name="unit">The unit to which this value should be converted for rendering.</param>
     /// <param name="formatProvider">Localization settings, such as number precision and thousands separators.</param>
     /// <returns>String with the formatted data quantity and unit abbreviation, separated by a space.</returns>
-    public readonly string ToString(DataSizeUnit unit, IFormatProvider? formatProvider = null) =>
+    public string ToString(DataSizeUnit unit, IFormatProvider? formatProvider = null) =>
         string.Format(formatProvider, "{0:N} {1}", AsUnit(unit), unit.ToAbbreviation());
 
     private static IFormatProvider WithPrecision(int precision, IFormatProvider? formatProvider) {
@@ -95,7 +95,7 @@ public partial struct DataSize {
     }
 
     /// <inheritdoc />
-    public readonly string ToString(string? format, IFormatProvider? formatProvider) {
+    public string ToString(string? format, IFormatProvider? formatProvider) {
         (double quantity, DataSizeUnit unit) = AsAutomaticUnit();
         return quantity.ToString(format ?? "N", formatProvider ?? CultureInfo.CurrentCulture) + ' ' + unit.ToAbbreviation();
     }
@@ -219,10 +219,10 @@ public partial struct DataSize {
     }
 
     /// <inheritdoc cref="op_Division(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
-    public static DataSize operator /(DataSize numerator, ulong denominator) => numerator / ((BigInteger) denominator << 3);
+    public static DataSize operator /(DataSize numerator, ulong denominator) => numerator / (BigInteger) denominator;
 
     /// <inheritdoc cref="op_Division(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
-    public static DataSize operator /(DataSize numerator, long denominator) => numerator / ((BigInteger) denominator << 3);
+    public static DataSize operator /(DataSize numerator, long denominator) => numerator / (BigInteger) denominator;
 
     /// <inheritdoc cref="op_Division(DataSizeUnits.DataSize,System.Numerics.BigInteger)" />
     public static DataSize operator /(DataSize numerator, double denominator) {
@@ -273,10 +273,10 @@ public partial struct DataSize {
     /// </summary>
     /// <param name="other">Another amount of data</param>
     /// <returns><c>true</c> if this instance and <paramref name="other"/> represent the same amount of data, or <c>false</c> if they represent different amounts</returns>
-    public readonly bool Equals(DataSize other) => Bits.Equals(other.Bits);
+    public bool Equals(DataSize other) => Bits.Equals(other.Bits);
 
     /// <inheritdoc cref="Equals(DataSizeUnits.DataSize)" />
-    public readonly override bool Equals(object? other) => other is DataSize other2 && Equals(other2);
+    public override bool Equals(object? other) => other is DataSize other2 && Equals(other2);
 
     /// <inheritdoc cref="Equals(DataSizeUnits.DataSize)" />
     public static bool operator ==(DataSize a, DataSize b) => a.Equals(b);
@@ -285,17 +285,17 @@ public partial struct DataSize {
     public static bool operator !=(DataSize a, DataSize b) => !a.Equals(b);
 
     /// <inheritdoc cref="Double.GetHashCode"/>
-    public readonly override int GetHashCode() => Bits.GetHashCode();
+    public override int GetHashCode() => Bits.GetHashCode();
 
     /// <summary>
     /// Compares two <see cref="DataSize"/> instances
     /// </summary>
     /// <param name="other">Another amount of data</param>
     /// <returns>A number &lt; 0 if this instance is smaller than <paramref name="other"/>, <c>0</c> if they are equal, or a number &gt; 0 if this instance is larger than <paramref name="other"/></returns>
-    public readonly int CompareTo(DataSize other) => Bits.CompareTo(other.Bits);
+    public int CompareTo(DataSize other) => Bits.CompareTo(other.Bits);
 
     /// <inheritdoc cref="IComparable.CompareTo" />
-    public readonly int CompareTo(object? other) => other switch {
+    public int CompareTo(object? other) => other switch {
         null            => 1,
         DataSize other2 => CompareTo(other2),
         _               => throw new ArgumentException($"Object must be of type {nameof(DataSize)}")
@@ -721,9 +721,9 @@ public partial struct DataSize {
     public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? formatProvider, out DataSize result) {
         result = new DataSize(0);
         int                whitespaceStart = s.IndexOfAny(WhitespaceSearchValues);
-        ReadOnlySpan<char> left = (whitespaceStart == -1 ? s : s[..whitespaceStart]).Trim();
+        ReadOnlySpan<char> left            = (whitespaceStart == -1 ? s : s[..whitespaceStart]).Trim();
 
-        BigInteger? integerBits = null;
+        BigInteger? integerBits  = null;
         double      floatingBits = 0;
         if (left.Contains('.')) {
             if (!double.TryParse(left, formatProvider, out floatingBits)) return false;
@@ -746,9 +746,9 @@ public partial struct DataSize {
         if (s is null) return false;
 
         int    whitespaceStart = s.IndexOfAny(Whitespace);
-        string left            = (whitespaceStart == -1 ? s : s.Substring(0, whitespaceStart)).Trim();
+        string left = (whitespaceStart == -1 ? s : s.Substring(0, whitespaceStart)).Trim();
 
-        BigInteger? integerBits  = null;
+        BigInteger? integerBits = null;
         double      floatingBits = 0;
         if (left.Contains('.')) {
             if (!double.TryParse(left, NumberStyles.Float | NumberStyles.AllowThousands, formatProvider, out floatingBits)) return false;

@@ -11,7 +11,7 @@ Convert and format data size units (bits, bytes, kilobits, kilobytes, and others
 This is a [.NET Standard 2.0](https://dotnet.microsoft.com/platform/dotnet-standard#versions) library, and can be depended upon in projects which target at least .NET 5, .NET Core 2.0, or .NET Framework 4.6.1.
 
 ```ps1
-dotnet add package DataSizeUnits
+dotnet package add DataSizeUnits
 ```
 
 ## Features

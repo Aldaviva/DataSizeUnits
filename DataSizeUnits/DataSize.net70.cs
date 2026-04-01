@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace DataSizeUnits;
 
-public partial struct DataSize {
+public readonly partial struct DataSize {
 
     /// <exception cref="DivideByZeroException"><paramref name="denominator"/> is <see cref="Zero"/></exception>
     static DataSize IDivisionOperators<DataSize, DataSize, DataSize>.operator /(DataSize numerator, DataSize denominator) {
@@ -66,7 +66,7 @@ public partial struct DataSize {
     static DataSize INumberBase<DataSize>.MinMagnitudeNumber(DataSize x, DataSize y) => new(BigInteger.MinMagnitude(x.Bits, y.Bits));
 
     /// <inheritdoc />
-    public readonly bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) {
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) {
         if (!Bits.TryFormat(destination, out charsWritten, format, provider) || destination.Length < charsWritten + 2) {
             return false;
         }

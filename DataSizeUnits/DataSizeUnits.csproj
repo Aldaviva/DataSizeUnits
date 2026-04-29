@@ -8,7 +8,8 @@
         <Description>Convert and format data size units (bits, bytes, kilobits, kilobytes, and others).</Description>
         <Copyright>© 2026 $(Authors)</Copyright>
         <PackageProjectUrl>https://github.com/Aldaviva/DataSizeUnits</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/Aldaviva/DataSizeUnits.git</RepositoryUrl>
+        <RepositoryUrl>$(PackageProjectUrl).git</RepositoryUrl>
+        <PackageReleaseNotes>$(PackageProjectUrl)/releases/tag/$(Version)</PackageReleaseNotes>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
@@ -25,6 +26,7 @@
         <PackageReadmeFile>Readme.md</PackageReadmeFile>
         <PackageIcon>icon.png</PackageIcon>
         <RestoreEnablePackagePruning>true</RestoreEnablePackagePruning>
+        <WarningsAsErrors>$(WarningsAsErrors);CA1859</WarningsAsErrors>
     </PropertyGroup>
 
     <ItemGroup>
@@ -34,7 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201" PrivateAssets="All" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.203" PrivateAssets="All" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" PrivateAssets="All" />
         <PackageReference Include="System.Text.Json" Version="8.0.6" />
     </ItemGroup>

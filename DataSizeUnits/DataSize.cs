@@ -1,3 +1,4 @@
+using DataSizeUnits.Serialization;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -16,7 +17,6 @@ namespace DataSizeUnits;
 /// </summary>
 [Serializable]
 [JsonConverter(typeof(DataSizeJsonConverter))]
-[Newtonsoft.Json.JsonConverter(typeof(DataSizeNewtonsoftJsonConverter))]
 public readonly partial struct DataSize: IXmlSerializable
 #if NET7_0_OR_GREATER
     , INumber<DataSize>, ISignedNumber<DataSize>
@@ -24,6 +24,14 @@ public readonly partial struct DataSize: IXmlSerializable
     , IComparable<DataSize>, IEquatable<DataSize>, IFormattable
 #endif
 {
+
+    static DataSize() {
+        try {
+            DataSizeNewtonsoftJsonConverterRegistrar.Register();
+        } catch (FileNotFoundException) {
+            // Newtonsoft.Json is not on the assembly load path, so skip registering our JsonConverter with it
+        }
+    }
 
     /// <summary>
     /// The total number of bits represented by this value.
@@ -35,7 +43,7 @@ public readonly partial struct DataSize: IXmlSerializable
     /// <para>The total number of bytes represented by this value.</para>
     /// <para>If there is a partial byte because <see cref="Bits"/> is not an integer multiple of 8, this is rounded toward zero to the closest integer byte.</para>
     /// </summary>
-    [JsonIgnore] [Newtonsoft.Json.JsonIgnore] [XmlIgnore]
+    [JsonIgnore] [XmlIgnore]
     public BigInteger Bytes => Bits >> 3;
 
     /// <summary>
@@ -50,7 +58,7 @@ public readonly partial struct DataSize: IXmlSerializable
      * ❌ DANGER ❌
      * Adding a no-arg constructor will cause XmlSerializer to generate invalid bytecode.
      * To allow users and JSON deserializers to instantiate this struct with no arguments, give a constructor with arity > 0 a default argument value instead.
-     * https://github.com/dotnet/runtime/issues/99613
+     * https://github.com/dotnet/runtime/issues/99613, allegedly fixed in .NET 11
      */
     /*
     /// <summary>

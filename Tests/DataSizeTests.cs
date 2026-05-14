@@ -112,6 +112,22 @@ public class DataSizeTests {
         { new DataSize(1, DataSizeUnit.Megabyte), new DataSize(1, DataSizeUnit.Megabit), false }
     };
 
+    [Theory] [MemberData(nameof(ParseData))]
+    public void Parse(string input, DataSize expected) {
+        Assert.Equal(expected, DataSize.Parse(input));
+    }
+
+    public static TheoryData<string, DataSize> ParseData => new() {
+        { "5 MB", new DataSize(5, DataSizeUnit.Megabyte) },
+        { "5MB", new DataSize(5, DataSizeUnit.Megabyte) },
+        { "10 megabyte", new DataSize(10, DataSizeUnit.Megabyte) },
+        { "+1,024 KB", new DataSize(1024, DataSizeUnit.Kilobyte) },
+        { "-1 GiB", new DataSize(-1, DataSizeUnit.Gigabyte) },
+        { "512", new DataSize(512) },
+        { "0", new DataSize() },
+        { "-0", new DataSize() },
+    };
+
     [Fact]
     public void Addition() {
         DataSize actual = new DataSize(1, DataSizeUnit.Megabyte) + new DataSize(2, DataSizeUnit.Megabyte);

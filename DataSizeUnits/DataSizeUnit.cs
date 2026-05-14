@@ -241,7 +241,7 @@ public static class UnitExtensions {
         /// <param name="unitNameOrAbbreviation">The name (e.g. <c>kilobyte</c>) or abbreviation (e.g. <c>kB</c>) of a data size unit.</param>
         /// <returns>The <see cref="DataSizeUnit"/> value that represents the matched data size unit.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The given name does not match any known units or their abbreviations.</exception>
-        public static DataSizeUnit? Parse(string unitNameOrAbbreviation) {
+        public static DataSizeUnit Parse(string unitNameOrAbbreviation) {
             unitNameOrAbbreviation = unitNameOrAbbreviation.Trim();
             switch (unitNameOrAbbreviation.ToLowerInvariant()) {
                 case "byte":

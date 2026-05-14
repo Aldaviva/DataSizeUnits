@@ -18,11 +18,13 @@ namespace DataSizeUnits;
 
 public readonly partial struct DataSize {
 
-    private static readonly char[] Whitespace = ['\t', '\n', '\v', '\f', '\r', '\x20'];
-
 #if NET8_0_OR_GREATER
-    private static readonly SearchValues<char> WhitespaceSearchValues = SearchValues.Create(Whitespace);
+    private static readonly SearchValues<char> NumberCharsSearchValues = SearchValues.Create(
+#else
+    // ReSharper disable once ArrangeRedundantParentheses
+    private static readonly char[] NumberChars = (
 #endif
+        ['+', ',', '-', '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '\u00a0', '\u061c', '٫', '٬', '\u200e', '\u200f', '’', '\u2212']);
 
     #region Constants
 
@@ -720,21 +722,25 @@ public readonly partial struct DataSize {
     /// <param name="style">Number style settings.</param>
     public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? formatProvider, out DataSize result) {
         result = new DataSize(0);
-        int                whitespaceStart = s.IndexOfAny(WhitespaceSearchValues);
-        ReadOnlySpan<char> left            = (whitespaceStart == -1 ? s : s[..whitespaceStart]).Trim();
+        int                rightStart = s.IndexOfAnyExcept(NumberCharsSearchValues);
+        ReadOnlySpan<char> left       = (rightStart == -1 ? s : s[..rightStart]).Trim();
 
         BigInteger? integerBits  = null;
         double      floatingBits = 0;
-        if (left.Contains('.')) {
-            if (!double.TryParse(left, formatProvider, out floatingBits)) return false;
-        } else {
-            if (!BigInteger.TryParse(left, style, formatProvider, out BigInteger bits)) return false;
+        if (BigInteger.TryParse(left, style, formatProvider, out BigInteger bits)) {
             integerBits = bits;
+        } else if (!double.TryParse(left, NumberStyles.Float | NumberStyles.AllowThousands, formatProvider, out floatingBits)) {
+            return false;
         }
 
-        DataSizeUnit unit = (whitespaceStart != -1 ? DataSizeUnit.Parse(s[whitespaceStart..].Trim().ToString()) : null) ?? DataSizeUnit.Byte;
+        DataSizeUnit unit;
+        try {
+            unit = rightStart != -1 ? DataSizeUnit.Parse(s[rightStart..].Trim().ToString()) : DataSizeUnit.Byte;
+        } catch (ArgumentOutOfRangeException) {
+            return false;
+        }
 
-        result = integerBits is null ? new DataSize(floatingBits, unit) : new DataSize(integerBits.Value, unit);
+        result = integerBits is not null ? new DataSize(integerBits.Value, unit) : new DataSize(floatingBits, unit);
         return true;
     }
 
@@ -745,22 +751,35 @@ public readonly partial struct DataSize {
         result = new DataSize(0);
         if (s is null) return false;
 
-        int    whitespaceStart = s.IndexOfAny(Whitespace);
-        string left = (whitespaceStart == -1 ? s : s.Substring(0, whitespaceStart)).Trim();
+        int    rightStart = IndexOfAnyExcept(s, NumberChars);
+        string left = (rightStart == -1 ? s : s.Substring(0, rightStart)).Trim();
 
         BigInteger? integerBits = null;
         double      floatingBits = 0;
-        if (left.Contains('.')) {
-            if (!double.TryParse(left, NumberStyles.Float | NumberStyles.AllowThousands, formatProvider, out floatingBits)) return false;
-        } else {
-            if (!BigInteger.TryParse(left, style, formatProvider, out BigInteger bits)) return false;
+        if (BigInteger.TryParse(left, style, formatProvider, out BigInteger bits)) {
             integerBits = bits;
+        } else if (!double.TryParse(left, NumberStyles.Float | NumberStyles.AllowThousands, formatProvider, out floatingBits)) {
+            return false;
         }
 
-        DataSizeUnit unit = (whitespaceStart != -1 ? DataSizeUnit.Parse(s.Substring(whitespaceStart).Trim()) : null) ?? DataSizeUnit.Byte;
+        DataSizeUnit unit;
+        try {
+            unit = rightStart != -1 ? DataSizeUnit.Parse(s.Substring(rightStart).Trim()) : DataSizeUnit.Byte;
+        } catch (ArgumentOutOfRangeException) {
+            return false;
+        }
 
         result = integerBits is null ? new DataSize(floatingBits, unit) : new DataSize(integerBits.Value, unit);
         return true;
+
+        static int IndexOfAnyExcept(string subject, char[] values) {
+            for (int i = 0; i < subject.Length; i++) {
+                if (!values.Contains(subject[i])) {
+                    return i;
+                }
+            }
+            return -1;
+        }
     }
 
 #endif

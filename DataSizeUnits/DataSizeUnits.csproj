@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
-        <Version>4.0.0-beta.3</Version>
+        <Version>4.0.0-beta.4</Version>
         <Authors>Ben Hutchison</Authors>
         <Company>$(Authors)</Company>
         <Description>Convert and format data size units (bits, bytes, kilobits, kilobytes, and others).</Description>

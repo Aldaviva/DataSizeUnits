@@ -57,7 +57,7 @@ public readonly partial struct DataSize: IXmlSerializable
     /*
      * ❌ DANGER ❌
      * Adding a no-arg constructor will cause XmlSerializer to generate invalid bytecode.
-     * To allow users and JSON deserializers to instantiate this struct with no arguments, give a constructor with arity > 0 a default argument value instead.
+     * To allow users and JSON deserializers to instantiate this struct with no arguments, give a constructor with arity > 0 a default argument value instead (in this case, DataSize(long)).
      * https://github.com/dotnet/runtime/issues/99613, allegedly fixed in .NET 11
      */
     /*

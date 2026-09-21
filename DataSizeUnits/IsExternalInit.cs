@@ -1,5 +1,7 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 
+#pragma warning disable IDE0130
 // ReSharper disable once CheckNamespace - this is the exact namespace required by this type to fix broken record compilation for .NET Standard 2.0
 namespace System.Runtime.CompilerServices;
 
@@ -8,4 +10,5 @@ namespace System.Runtime.CompilerServices;
 /// <para>From <see href="https://stackoverflow.com/a/62656145/979493"/></para>
 /// </summary>
 [EditorBrowsable(EditorBrowsableState.Never)]
+[ExcludeFromCodeCoverage]
 internal sealed class IsExternalInit;

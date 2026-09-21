@@ -1,9 +1,13 @@
-﻿# Due to [1], you may have to manually change the "Build Action" of this file to "C# analyzer additional file".
+# Due to [1], you may have to manually change the "Build Action" of this file to "C# analyzer additional file".
 # [1] https://github.com/dotnet/roslyn/issues/4655
 
 # This file adjusts exception information used by Tetractic.CodeAnalysis.ExceptionAnalyzers.
 # Usage: <memberId>[ <accessor>] (-/+)<exceptionTypeId>
 # See ECMA-334, 5th Ed. § D.4.2 "ID string format" for a description of the ID format.
 
+M:Newtonsoft.Json.JsonConverter`1.ReadJson(Newtonsoft.Json.JsonReader,System.Type,`0,System.Boolean,Newtonsoft.Json.JsonSerializer) +T:Newtonsoft.Json.JsonException
+M:System.Numerics.IDivisionOperators`3.op_Division(`0,`1) +T:System.DivideByZeroException
+M:System.Text.Json.Serialization.JsonConverter`1.Read(System.Text.Json.Utf8JsonReader@,System.Type,System.Text.Json.JsonSerializerOptions) +T:System.Text.Json.JsonException
+M:System.Text.Json.Serialization.JsonConverter`1.Write(System.Text.Json.Utf8JsonWriter,`0,System.Text.Json.JsonSerializerOptions) +T:System.Text.Json.JsonException
 M:System.Text.RegularExpressions.Regex.Match(System.String,System.String) -T:System.Text.RegularExpressions.RegexMatchTimeoutException
 M:System.Text.RegularExpressions.Regex.Match(System.String,System.String,System.Text.RegularExpressions.RegexOptions) -T:System.Text.RegularExpressions.RegexMatchTimeoutException

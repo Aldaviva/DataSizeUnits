@@ -21,7 +21,7 @@ jobs:
       uses: actions/checkout@v6
 
     - name: Initialize test reporting
-      uses: testspace-com/setup-testspace@v1
+      uses: testspace-com/setup-testspace@5fc620521eddeba83c1c0dd58f5a524adf474c93
       with:
         domain: ${{github.repository_owner}}
 
@@ -53,7 +53,7 @@ jobs:
       run: exit $env:TEST_EXIT_CODE
 
     - name: Upload package
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ env.ProjectName }}.nupkg
         path: ${{ env.ProjectName }}/bin/Release/*.*nupkg

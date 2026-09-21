@@ -105,6 +105,7 @@ internal sealed class DataSizeJsonConverter: System.Text.Json.Serialization.Json
         return new DataSize(bits);
     }
 
+    /// <exception cref="JsonException"></exception>
     public override void Write(Utf8JsonWriter writer, DataSize value, JsonSerializerOptions options) {
         writer.WriteRawValue(value.Bits.ToString("R"));
     }

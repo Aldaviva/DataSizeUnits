@@ -21,6 +21,12 @@ dotnet package add DataSizeUnits
         double sizeInMegabytes = new DataSize(150, DataSizeUnit.Megabit).AsUnit(DataSizeUnit.Megabyte);
         // sizeInMegabytes == 17.8
         ```
+    - 1 MB → 1024 kB
+        ```cs
+        // if you want to convert to a smaller unit with an integral quantity, AsUnitExact avoids floating-point imprecision
+        BigInteger kilobytesIn1Megabyte = new DataSize(1, DataSizeUnit.Megabyte).AsUnitExact(DataSizeUnit.Kilobyte);
+        // kilobytesIn1Megabyte = 1024
+        ```
 
 - **Normalize** a number of bytes to an automatically-selected unit based on its magnitude
     - 2,097,152 bytes → 2 MB
@@ -35,7 +41,7 @@ dotnet package add DataSizeUnits
         // normalized.quantity == 16.78
         // normalized.unit == DataSizeUnit.Megabit
         ```
-    - The unit will be automatically selected so the value is greater than or equal to 1 of that unit, and less than 1 of the next largest unit. For example, 2,097,152 bytes is greater than or equal to 1 MB and less than 1 GB, so it is normalized to MB.
+    - The unit will be automatically selected so the value is greater than or equal to 1 of that unit, and less than 1 of the next largest unit. For example, 2,097,152 bytes is greater than or equal to 1 MB and less than 1 GB, so it is normalized to 2 MB.
 
 - **Parse** data sizes
     - 1.5 MB → 1,572,864 bytes
@@ -77,7 +83,7 @@ dotnet package add DataSizeUnits
         ```
     - Automatic precision, manual unit
         ```cs
-         formatted = new DataSize(1572864).ToString(DataSizeUnit.Kilobyte);
+        formatted = new DataSize(1572864).ToString(DataSizeUnit.Kilobyte);
         // formatted == "1,536.00 kB"
         ```
     - Manual precision, automatic unit
@@ -99,8 +105,11 @@ dotnet package add DataSizeUnits
     - XML ([XmlSerializer](https://learn.microsoft.com/en-us/dotnet/standard/serialization/xml-and-soap-serialization))
         ```xml
         <?xml version="1.0" encoding="utf-8"?>
-        <MyFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <MyFile>
             <Filename>example.txt</Filename>
             <Size bits="8192" />
         </MyFile>
         ```
+
+## Migration
+You can read the [Migration](https://github.com/Aldaviva/DataSizeUnits/wiki/Migration) article in the repository wiki to learn about breaking changes between major version upgrades.

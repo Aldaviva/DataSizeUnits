@@ -38,7 +38,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.401" PrivateAssets="All" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" PrivateAssets="All" />
-        <PackageReference Include="System.Text.Json" Version="8.0.6" />
+        <PackageReference Include="System.Text.Json" Version="9.0.20" />
     </ItemGroup>
 
     <PropertyGroup Condition="'$(CI)' == 'true' or '$(Configuration)' != 'Debug'">

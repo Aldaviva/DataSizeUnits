@@ -65,13 +65,19 @@ public readonly partial struct DataSize {
     static DataSize INumberBase<DataSize>.MinMagnitude(DataSize x, DataSize y) => new(BigInteger.MinMagnitude(x.Bits, y.Bits));
     static DataSize INumberBase<DataSize>.MinMagnitudeNumber(DataSize x, DataSize y) => new(BigInteger.MinMagnitude(x.Bits, y.Bits));
 
+    //  Called when implicitly converting DataSize to string, for example in $-interpolated strings
     /// <inheritdoc />
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider) {
-        if (!Bits.TryFormat(destination, out charsWritten, format, provider) || destination.Length < charsWritten + 2) {
-            return false;
-        }
+        (double quantity, DataSizeUnit unit) = AsAutomaticUnit();
+
+        if (!quantity.TryFormat(destination, out charsWritten, !format.IsEmpty ? format : "N", provider)) return false;
+
         destination[charsWritten++] = ' ';
-        destination[charsWritten++] = 'b';
+
+        string unitStr = unit.ToAbbreviation();
+        if (!unitStr.TryCopyTo(destination[charsWritten..])) return false;
+        charsWritten += unitStr.Length;
+
         return true;
     }
 

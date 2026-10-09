@@ -188,4 +188,46 @@ public class DataSizeTests {
         Assert.Equal(0, actual.Bytes);
     }
 
+    [Fact]
+    public void ToStringTest() {
+        string actual = ((ValueType) new DataSize(1536)).ToString()!;
+        Assert.Equal("1.50 kB", actual);
+    }
+
+    [Fact]
+    public void ToStringBits() {
+        string actual = new DataSize(1536).ToString(true);
+        Assert.Equal("12.29 kb", actual);
+    }
+
+    [Fact]
+    public void ToStringPrecision() {
+        string actual = new DataSize(1536).ToString(1);
+        Assert.Equal("1.5 kB", actual);
+    }
+
+    [Fact]
+    public void ToStringPrecisionAndUnit() {
+        string actual = new DataSize(1536).ToString(1, DataSizeUnit.Kilobyte);
+        Assert.Equal("1.5 kB", actual);
+    }
+
+    [Fact]
+    public void ToStringUnit() {
+        string actual = new DataSize(1536).ToString(DataSizeUnit.Kilobyte);
+        Assert.Equal("1.50 kB", actual);
+    }
+
+    [Fact]
+    public void ToStringImplicitly() {
+        string actual = $"{new DataSize(1536)}";
+        Assert.Equal("1.50 kB", actual);
+    }
+
+    [Fact]
+    public void ToStringImplicitlyFormatted() {
+        string actual = $"{new DataSize(1536):N1}";
+        Assert.Equal("1.5 kB", actual);
+    }
+
 }
